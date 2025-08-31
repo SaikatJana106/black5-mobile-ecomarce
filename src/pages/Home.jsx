@@ -54,7 +54,7 @@ const Home = () => {
     const scroll = (direction) => {
         if (scrollRef.current) {
             scrollRef.current.scrollBy({
-                left: direction === "left" ? -400 : 400,
+                left: direction === "left" ? -400 : 401,
                 behavior: "smooth",
             });
         }
