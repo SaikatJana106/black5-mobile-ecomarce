@@ -1,0 +1,44 @@
+{
+  "filters": [
+    {
+      "title": "Filters",
+      "options": [
+        "Explore Best Sellers",
+        "Top Picks For You",
+        "Recently Viewed"
+      ]
+    },
+    {
+      "title": "Shop By Lifestyle",
+      "options": [
+        "Office Going",
+        "Festival Mood",
+        "Party Night",
+        "Lazy Lads",
+        "Foody Pagluu",
+        "Love You Zindegi"
+      ]
+    },
+    {
+      "title": "Colours",
+      "options": [
+        "Blue Vibe",
+        "Black Vibe",
+        "White Vibe",
+        "Lifestvgrdfg gb yle",
+        "Lifestvgrdfg gb yle",
+        "Lifestvgrdfg gb yle"
+      ]
+    },
+    {
+      "title": "Shop By State",
+      "options": [
+        "West Bengal",
+        "Uttarpradesh",
+        "Bihar",
+        "Jharkhand",
+        "Ahmedabad"
+      ]
+    }
+  ]
+}

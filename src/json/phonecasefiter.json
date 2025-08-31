@@ -1,0 +1,155 @@
+[
+  {
+    "id": 1,
+    "name": "Mayur Mayuri",
+    "price": "299/-",
+    "stars": 5,
+    "image": "/4productpage/1img.png",
+    "category": "women",
+    "gender": "female"
+  },
+  {
+    "id": 2,
+    "name": "Mayur Mayuri",
+    "price": "299/-",
+    "stars": 5,
+    "image": "/4productpage/2img.png",
+    "category": "women",
+    "gender": "female"
+  },
+  {
+    "id": 3,
+    "name": "Mayur Mayuri",
+    "price": "299/-",
+    "stars": 5,
+    "image": "/4productpage/2img.png",
+    "category": "women",
+    "gender": "female"
+  },
+  {
+    "id": 4,
+    "name": "Mayur Mayuri",
+    "price": "299/-",
+    "stars": 5,
+    "image": "/4productpage/1img.png",
+    "category": "women",
+    "gender": "female"
+  },
+  {
+    "id": 5,
+    "name": "Mayur Mayuri",
+    "price": "299/-",
+    "stars": 5,
+    "image": "/4productpage/2img.png",
+    "category": "women",
+    "gender": "female"
+  },
+  {
+    "id": 6,
+    "name": "Mayur Mayuri",
+    "price": "299/-",
+    "stars": 5,
+    "image": "/4productpage/2img.png",
+    "category": "men",
+    "gender": "male"
+  },
+  {
+    "id": 7,
+    "name": "Mayur Mayuri",
+    "price": "299/-",
+    "stars": 5,
+    "image": "/4productpage/1img.png",
+    "category": "men",
+    "gender": "male"
+  },
+  {
+    "id": 8,
+    "name": "Mayur Mayuri",
+    "price": "299/-",
+    "stars": 5,
+    "image": "/4productpage/2img.png",
+    "category": "men",
+    "gender": "male"
+  },
+  {
+    "id": 9,
+    "name": "Mayur Mayuri",
+    "price": "299/-",
+    "stars": 5,
+    "image": "/4productpage/2img.png",
+    "category": "men",
+    "gender": "male"
+  },
+  {
+    "id": 10,
+    "name": "Mayur Mayuri",
+    "price": "299/-",
+    "stars": 5,
+    "image": "/4productpage/2img.png",
+    "category": "men",
+    "gender": "male"
+  },
+  {
+    "id": 11,
+    "name": "Mayur Mayuri",
+    "price": "299/-",
+    "stars": 4,
+    "image": "/4productpage/1img.png",
+    "category": "couples",
+    "gender": "both"
+  },
+  {
+    "id": 12,
+    "name": "Mayur Mayuri",
+    "price": "299/-",
+    "stars": 4,
+    "image": "/4productpage/2img.png",
+    "category": "unisex",
+    "gender": "couples"
+  },
+   {
+    "id": 12,
+    "name": "Mayur Mayuri",
+    "price": "299/-",
+    "stars": 4,
+    "image": "/4productpage/2img.png",
+    "category": "unisex",
+    "gender": "couples"
+  },
+   {
+    "id": 12,
+    "name": "Mayur Mayuri",
+    "price": "299/-",
+    "stars": 4,
+    "image": "/4productpage/2img.png",
+    "category": "unisex",
+    "gender": "couples"
+  },
+   {
+    "id": 12,
+    "name": "Mayur Mayuri",
+    "price": "299/-",
+    "stars": 4,
+    "image": "/4productpage/2img.png",
+    "category": "unisex",
+    "gender": "couples"
+  },
+   {
+    "id": 12,
+    "name": "Mayur Mayuri",
+    "price": "299/-",
+    "stars": 4,
+    "image": "/4productpage/2img.png",
+    "category": "unisex",
+    "gender": "couples"
+  },
+  {
+    "id": 13,
+    "name": "Mayur Mayuri",
+    "price": "299/-",
+    "stars": 4,
+    "image": "/4productpage/2img.png",
+    "category": "customized",
+    "gender": "custom"
+  }
+]

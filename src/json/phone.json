@@ -1,0 +1,62 @@
+[
+    {
+        "id": 1,
+        "name": "Apple iPhone 14 Pro Max"
+    },
+    {
+        "id": 2,
+        "name": "Samsung Galaxy S23 Ultra"
+    },
+    {
+        "id": 3,
+        "name": "OnePlus 11R"
+    },
+    {
+        "id": 4,
+        "name": "Google Pixel 7 Pro"
+    },
+    {
+        "id": 5,
+        "name": "Xiaomi 13 Pro"
+    },
+    {
+        "id": 6,
+        "name": "Realme GT Neo 3"
+    },
+    {
+        "id": 7,
+        "name": "iQOO 11 5G"
+    },
+    {
+        "id": 8,
+        "name": "Motorola Edge 40"
+    },
+    {
+        "id": 9,
+        "name": "Nothing Phone (2)"
+    },
+    {
+        "id": 10,
+        "name": "Asus ROG Phone 7"
+    },
+    {
+        "id": 11,
+        "name": "Sony Xperia 1 V"
+    },
+    {
+        "id": 12,
+        "name": "Vivo X90 Pro"
+    },
+    {
+        "id": 13,
+        "name": "Samsung Galaxy Z Fold5"
+    },
+    {
+        "id": 14,
+        "name": "Apple iPhone SE (3rd Gen)"
+    },
+    {
+        "id": 15,
+        "name": "Poco F5 Pro"
+    }
+]

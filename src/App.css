@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+/* Hide scrollbar but keep scrolling */
+.scrollbar-hide {
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari */
+}
+
+
+/* Customize scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: auto;
+  height: auto;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: black !important;
+  /* Track color */
+  border-radius: 10px;
+  width: fit-content;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: url('/2phonecover/scrollbar.png') no-repeat center;
+  background-size: cover;
+  border-radius: 10px;
+}
+
+/* .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+} */
+
+
+input[type="checkbox"] {
+  min-width: 25px;
+  min-height: 25px;
+
+ border: 2px solid #333;
+  border-radius: 4px;
+  /* appearance: none;
+  -webkit-appearance: none;
+  border: 2px solid #333;
+  border-radius: 4px;
+  position: relative;
+  cursor: pointer; */
+}
+
+

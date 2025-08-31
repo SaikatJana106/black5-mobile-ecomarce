@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "category": "Men",
+    "description": "Products or content designed specifically for male users",
+    "image": "/w2.png"
+  },
+  {
+    "id": 2,
+    "category": "Women",
+    "description": "Targeted at female users",
+    "image": "/w2.png"
+  },
+  {
+    "id": 3,
+    "category": "Kids",
+    "description": "Intended for children (toys, clothes, etc.)",
+    "image": "/w2.png"
+  },
+  {
+    "id": 4,
+    "category": "Couples",
+    "description": "Meant for two people in a romantic relationship",
+    "image": "/w2.png"
+  },
+  {
+    "id": 5,
+    "category": "Family",
+    "description": "Designed for all family members",
+    "image": "/w2.png"
+  },
+  {
+    "id": 6,
+    "category": "Everyone",
+    "description": "Gender-neutral or universally suitable products/services",
+    "image": "/w2.png"
+  },
+  {
+    "id": 7,
+    "category": "Office",
+    "description": "Items or tools useful for workplace or professional settings",
+    "image": "/w2.png"
+  },
+  {
+    "id": 8,
+    "category": "Home",
+    "description": "Products designed for household use",
+    "image": "/w2.png"
+  },
+  {
+    "id": 9,
+    "category": "Travel",
+    "description": "Intended for travelers",
+    "image": "/w2.png"
+  },
+  {
+    "id": 10,
+    "category": "Fitness/Wellness",
+    "description": "Targeted at health-conscious or fitness-focused individuals",
+    "image": "/w2.png"
+  }
+]
