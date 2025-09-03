@@ -3,14 +3,13 @@ import phoneCases from "../json/phonecase.json"
 import phones from "../json/phone.json"
 import data from '../json/phonecasefiter.json'
 import cases from '../json/cases.json'
-import { FaStar } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight, FaStar } from 'react-icons/fa';
 import { CiSearch } from "react-icons/ci";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import phonecasefilterdata from '../json/phonecasefilterdata.json';
+import axios from 'axios';
+import { Link, useParams } from "react-router-dom";
 const Phonecase = () => {
-
-
-
   // filter button for product
   const filtersectionRef = useRef(null);
   const [isFilterSectionVisible, setIsFilterSectionVisible] = useState(false);
@@ -51,13 +50,26 @@ const Phonecase = () => {
     }
   };
   // ===============phone case==============
-
   //======================category=================== 
+
   const categoryscrollRef = useRef(null);
 
   const categoryscroll = (direction) => {
     if (categoryscrollRef.current) {
       categoryscrollRef.current.scrollBy({
+        left: direction === "left" ? -400 : 401,
+        behavior: "smooth",
+      });
+    }
+  };
+  //======================category===================
+
+  //=========== offerscroll ===========
+  const offerscrollRef = useRef(null);
+
+  const offerscroll = (direction) => {
+    if (offerscrollRef.current) {
+      offerscrollRef.current.scrollBy({
         top: direction === "up" ? -200 : 200, // vertical scroll
         behavior: "smooth",
       });
@@ -93,6 +105,49 @@ const Phonecase = () => {
   // get selected category
   const selected = categories.find((c) => c.slug === "phone-case");
   // =================category api call ===========================
+
+  // ==================product api call====================
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+
+
+    const fetchProducts = async (page = 1) => {
+      try {
+        setLoading(true);
+        const res = await axios.get(
+          `https://black5creations.orbitalwebworks.com/api/products`
+        );
+
+        const productData = res.data.data.products;
+        setProducts(productData.data); // products array
+      } catch (err) {
+        console.error("Error fetching products:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+  // ==================product api call====================
+
+  //====================== brands api call ====================
+  const [brands, setBrands] = useState([]);
+  useEffect(() => {
+    const fetchBrands = async () => {
+      try {
+        const res = await axios.get(
+          `https://black5creations.orbitalwebworks.com/api/brands`
+        );
+        console.log(res.data);
+        const brandsdata = res.data.data.brands.data;
+        setBrands(brandsdata);
+      } catch (err) {
+        console.error("Error fetching brands:", err);
+      }
+    }; fetchBrands();
+  }, []);
+  //====================== brands api call ====================
 
   return (
     <div className=" text-white font-sans">
@@ -131,7 +186,7 @@ const Phonecase = () => {
             </button>
           </div>
           <div className="grid max-sm:grid-cols-1 max-lg:grid-cols-2 grid-cols-3 gap-2 h-36 overflow-auto custom-scrollbar">
-            {phones.map((phn, i) => (
+            {brands.map((phn, i) => (
               <label key={phn.id || i} className="flex items-center cursor-pointer">
                 <input type="checkbox" className="mr-2" />
                 {phn.name}
@@ -151,7 +206,7 @@ const Phonecase = () => {
             </button>
           </div>
           <div className="grid max-sm:grid-cols-1 max-lg:grid-cols-2 grid-cols-3  gap-2 h-36 overflow-auto custom-scrollbar">
-            {phones.map((phn, i) => (
+            {brands.map((phn, i) => (
               <label key={phn.id || i} className="flex items-center cursor-pointer">
                 <input type="checkbox" className="mr-2" />
                 {phn.name}
@@ -162,11 +217,11 @@ const Phonecase = () => {
 
         {/* Right Side - Category Cards */}
         <div className="max-[1400px]:w-full w-1/2 bg-black  rounded-xl  p-6 mt-8 md:mt-0">
-          <h2 className="text-lg font-semibold text-white text-center mb-4">Select Your Category</h2>
+          <h2 className="text-2xl underline font-semibold text-white text-center mb-4">Today's Offer</h2>
           <div className='flex flex-col justify-center items-center'>
-            <IoIosArrowDown onClick={() => categoryscroll("down")} className='bg-white rounded-full text-black p-1 text-2xl shadow-2xl' />
-            <div ref={categoryscrollRef} className='h-[400px] overflow-hidden m-auto scrollbar-hide w-full'>
-              {/* {[1, 2, 3, 4, 5].map((item, i) => (
+            <IoIosArrowDown onClick={() => offerscroll("down")} className='bg-white rounded-full text-black p-1 text-2xl shadow-2xl' />
+            <div ref={offerscrollRef} className='h-[400px] overflow-hidden m-auto scrollbar-hide w-full'>
+              {[1, 2, 3, 4, 5].map((item, i) => (
                 <div
                   key={i}
                   className="flex flex-wrap   items-center bg-white rounded-lg p-4 mb-4 shadow-md "
@@ -186,35 +241,9 @@ const Phonecase = () => {
                     <div className="text-yellow-500 mt-1 text-sm">★★★★★</div>
                   </div>
                 </div>
-              ))} */}
-
-              {selected && selected.children?.length > 0 ? (
-                selected.children.map((child) => (
-                  <div
-                    key={child.id}
-                    className="flex flex-wrap   items-center bg-white rounded-lg p-4 mb-4 shadow-md "
-                    style={{ rowGap: '0.5rem', columnGap: '1rem' }}
-                  >
-                    <img
-                      src="/2phonecover/banner.png"
-                      alt="Phone Case"
-                      className="w-40 h-48 object-cover rounded-md flex-[1]"
-                    />
-                    <div className="">
-                      <p className="text-[clamp(1.3rem,1.8vw,2.5rem)] text-gray-900">The Best Phone Cases For</p>
-                      <h3 className="text-xl font-semibold text-black">{child.name}</h3>
-                      <button className="mt-2 px-4 py-1 bg-black text-white text-sm rounded-md">
-                        Shop Now
-                      </button>
-                      <div className="text-yellow-500 mt-1 text-sm">★★★★★</div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-white">No subcategories found</p>
-              )}
+              ))}
             </div>
-            <IoIosArrowUp onClick={() => categoryscroll("up")} className='bg-white rounded-full text-black p-1 text-2xl shadow-2xl' />
+            <IoIosArrowUp onClick={() => offerscroll("up")} className='bg-white rounded-full text-black p-1 text-2xl shadow-2xl' />
           </div>
         </div>
       </section>
@@ -264,7 +293,7 @@ const Phonecase = () => {
 
 
       {/*---------------------------- case oprtion choose -------------------------------------------- */}
-      <section>
+      {/* <section>
         <div className="text-center mb-6">
           <button className="px-4 py-1 bg-white text-black rounded-full font-medium mb-2 text-2xl">
             Explore Our Cases
@@ -293,6 +322,58 @@ const Phonecase = () => {
               </p>
             </div>
           ))}
+        </div>
+      </section> */}
+      <section className='py-8'>
+        <div className="text-center mb-6">
+          <button className="px-4 py-1 bg-white text-black rounded-full font-medium mb-2 text-2xl">
+            Explore Our Ccatagories
+          </button>
+          <p className="text-gray-400">Specilly Designed Cases For Everyone</p>
+        </div>
+        <div className="flex items-center w-[90%] mx-auto justify-center">
+          {/* Left Arrow */}
+          <button
+            onClick={() => categoryscroll("left")}
+            className="h-fit bg-white p-2 rounded-full text-black"
+          >
+            <FaChevronLeft />
+          </button>
+
+          {/* Carousel categoryScroll Section */}
+          <div
+            ref={categoryscrollRef}
+            className="flex gap-5 overflow-x-hidden scrollbar-hide scroll-smooth px-8"
+          >
+            {selected && selected.children?.length > 0 ? (
+              selected.children.map((child) => (
+                <div
+                  key={child.id}
+                  className="min-w-[15rem] bg-cover bg-center rounded-t-full h-[24rem] flex flex-col justify-end items-center"
+                  style={{ backgroundImage: "url('/w2.png')" }}
+                >
+                  <div className="bg-white w-full text-center py-2 rounded-b-md">
+                    <button className="text-black font-medium text-xl">
+                      {child.name}
+                    </button>
+                    <div>
+                      <button className="underline text-xs text-black">View All</button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-white">No subcategories found</p>
+            )}
+          </div>
+
+          {/* Right Arrow */}
+          <button
+            onClick={() => categoryscroll("right")}
+            className="h-fit bg-white p-2 rounded-full text-black"
+          >
+            <FaChevronRight />
+          </button>
         </div>
       </section>
 
@@ -375,58 +456,38 @@ const Phonecase = () => {
 
 
         {/* Product Grid */}
-        <div className="lg:w-3/4 w-full space-y-10">
 
-          {[
-            {
-              label: "Phone Cases For Women's",
-              items: data.filter(item => item.category === "women")
-            },
-            {
-              label: "Phone Cases For Men",
-              items: data.filter(item => item.category === "men")
-            },
-            {
-              label: "Phone Cases For Couples",
-              items: data.filter(item => item.category === "couples")
-            },
-            {
-              label: "Phone Cases Unisex",
-              items: data.filter(item => item.category === "unisex")
-            },
-            {
-              label: "Customized Phone Cases",
-              items: data.filter(item => item.category === "customized")
-            }
-          ].map((section, i) => (
-            <div key={i}>
+        {/* Product Grid */}
+        <div className="lg:w-3/4 w-full space-y-10">
+          {[...new Set(products.map((p) => p.name))].map((name) => (
+            <div>
               <h3 className=" text-white bg-black font-semibold text-center w-max mx-auto px-4 py-1 text-lg rounded-full mb-1">
-                {section.label}
+                {name}
               </h3>
               <p className="text-center text-xs text-gray-600 mb-4">
                 iodirf grdf grf with premium designs and quality
               </p>
               <div className="flex flex-wrap justify-center items-center gap-8 h-fit">
-                {section.items.map((item, j) => (
-                  <div key={j} className="flex flex-col items-center text-center space-y-1">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="h-fit w-fit object-cover rounded-md max-h-60"
-                    />
-                    <p className="text-xs font-medium">{item.name}</p>
-                    <div className="text-yellow-500 text-sm">
-                      {"★".repeat(item.stars)}
-                      {"☆".repeat(5 - item.stars)}
+                {products
+                  .filter((item) => item.name === name)
+                  .map((item) => (
+                    <div key={item.id} className="flex flex-col items-center text-center space-y-1">
+                      <img
+                        src={item.image_link ? item.image_link : "/4productpage/1img.png"}
+                        alt={item.name}
+                        className="h-fit w-fit object-cover rounded-md max-h-60"
+                      />
+                      <Link to={`/phone-case-product/${item.id}`} className="text-xs font-medium hover:underline">{item.name}</Link >
+                      <div className="text-yellow-500 text-sm">
+                        {"★".repeat(4)}{"☆".repeat(1)}
+                      </div>
+                      <p className="text-sm font-semibold">Price: ₹{item.total_price}</p>
                     </div>
-                    <p className="text-sm font-semibold">Price: {item.price}</p>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
           ))}
         </div>
-
       </div>
     </div>
   );

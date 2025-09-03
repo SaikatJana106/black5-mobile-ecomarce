@@ -30,7 +30,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Home/>} />
           <Route path="/phonecase" element={<Phonecase/>} />
-          <Route path="/product" element={<ProductPage/>} />
+          <Route path="/phone-case-product/:productId" element={<ProductPage/>} />
+          
           <Route path="/wallart" element={<WallArt/>} />
           <Route path="/wallartproduct" element={<WallArtproductpage/>} />
           <Route path="/customise" element={<Customise/>} />

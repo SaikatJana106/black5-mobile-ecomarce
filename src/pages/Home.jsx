@@ -176,7 +176,7 @@ const Home = () => {
                     </div>
                 </div>
 
-                <div className="flex items-center w-[90%] mx-auto">
+                <div className="flex items-center w-[90%] mx-auto justify-center">
                     {/* Left Arrow */}
                     <button
                         onClick={() => scroll("left")}
@@ -199,7 +199,7 @@ const Home = () => {
                                 >
                                     <div className="bg-white w-full text-center py-2 rounded-b-md">
                                         <button className="text-black font-medium text-xl">
-                                         {child.name}
+                                            {child.name}
                                         </button>
                                         <div>
                                             <button className="underline text-xs">View All</button>
@@ -259,7 +259,7 @@ const Home = () => {
                 </div>
             </section>
 
-            <div className="bg-white text-black py-10 px-2 sm:px-10 font-sans w-[85%] max-lg:w-[95%] rounded-4xl mx-auto my-5 flex justify-between flex-col-reverse lg:flex-row " style={{ rowGap: '1rem' }}>
+            <div className="bg-white text-black py-10 px-2 sm:px-10 font-sans w-[85%] max-lg:w-[95%] rounded-4xl mx-auto my-5 flex justify-between flex-col-reverse lg:flex-row max-xl:max-w-2xl max-w-[1400px] " style={{ rowGap: '1rem' }}>
                 <div className=" w-full lg:w-[40%]">
                     <h2 className="text-xl font-semibold mb-2 text-center">Our Customer Reviews</h2>
                     <div className='flex flex-col justify-center items-center '>
@@ -467,7 +467,7 @@ const Home = () => {
             </div>
 
             <section className=" text-white py-10">
-                <div className="w-[95%] xl:w-[90%] mx-auto flex flex-col lg:flex-row items-center justify-center relative max-w-[1400px]">
+                <div className="w-[95%] xl:w-[90%] mx-auto flex flex-col lg:flex-row items-center justify-center relative max-w-[1400px] max-xl:max-w-2xl">
 
                     <div className="bg-white text-black rounded-4xl px-6 max-md:px-2 py-8 w-[60%] -mr-56 mb-10 max-lg:w-full  max-lg:-mr-0">
 
@@ -519,7 +519,7 @@ const Home = () => {
 
 
             <section className="bg-black text-white py-10">
-                <div className="w-[95%] xl:w-[90%] mx-auto flex flex-col lg:flex-row items-center justify-center relative max-w-[1400px]">
+                <div className="w-[95%] xl:w-[90%] mx-auto flex flex-col lg:flex-row items-center justify-center relative max-w-[1400px] max-xl:max-w-2xl">
                     <div className=" z-0 w-[700px] max-lg:hidden">
                         <img
                             src="/home/bigwall.png"
@@ -624,14 +624,12 @@ const Home = () => {
                 <h1 className='text-white text-center font-smeibold text-xl my-3'>Apply now before they expires</h1>
             </section>
 
-            <div className="bg-[url('/home/home-contact-bg2.png')] bg-cover bg-center min-h-screen p-4 text-white font-sans">
+            <div className=" bg-cover bg-center p-4 text-white font-sans w-[90%] max-md:w-[98%] max-w-[1400px] mx-auto">
                 <div className="flex flex-col lg:flex-row justify-between gap-8 h-fit">
-                    {/* Left Section - Map and State Info */}
-                    <div className="w-full lg:w-2/3 flex flex-col items-center justify-around">
+                    {/* <div className="w-full lg:w-2/3 flex flex-col items-center justify-around">
 
                         <div className="mt-4 space-y-5">
                             <h1 className='text-black text-center font-semibold text-3xl'>We Are Proudly From <br /><span className='text-black text-center font-semibold text-6xl'>India</span></h1>
-                            {/* <h1 >India</h1> */}
                             <h1 className="bg-black text-white px-4 py-1 text-2xl font-semibold rounded-full hover:bg-gray-800 transition text-center">
                                 Shop By Your State
                             </h1>
@@ -655,25 +653,22 @@ const Home = () => {
 
 
                         <div className="flex items-center justify-center gap-4 w-full mx-auto">
-                            {/* Left Arrow with BG + Shadow */}
+    
                             <div className="bg-white p-2 rounded-full drop-shadow-[0_4px_10px_rgba(0,0,0,0.25)] cursor-pointer">
                                 <MdKeyboardArrowLeft className="text-black text-[clamp(1.5rem,2vw,50rem)]" />
                             </div>
 
-                            {/* Circular Image */}
                             <div className="w-[clamp(14rem,18vw,50rem)] h-[clamp(14rem,18vw,50rem)] rounded-full overflow-hidden border-4 border-white shadow-lg relative z-10 drop-shadow-[0_4px_10px_rgba(0,0,0,0.25)]">
                                 <img
-                                    src="/home/statue.png" // Replace with your image path
+                                    src="/home/statue.png"
                                     alt="West Bengal"
                                     className="w-[clamp(14rem,18vw,50rem)] h-[clamp(14rem,18vw,50rem)] object-cover"
                                 />
-                                {/* Label Overlay */}
                                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black text-white text-[clamp(0.7rem,1vw,50rem)] px-4 py-1 rounded-full z-20">
                                     West Bengal
                                 </div>
                             </div>
 
-                            {/* Right Arrow with BG + Shadow */}
                             <div className="bg-white p-2 rounded-full drop-shadow-[0_4px_10px_rgba(0,0,0,0.25)] cursor-pointer">
                                 <MdKeyboardArrowRight className="text-black text-[clamp(1.5rem,2vw,50rem)]" />
                             </div>
@@ -707,55 +702,81 @@ const Home = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Right Section - Social and FAQ */}
-                    <div className="w-full lg:w-1/3 flex flex-col gap-4 self-center">
-                        <div className='w-full space-y-5'>
-                            <h3 className="text-[clamp(2rem,3.5vw,50rem)] font-semibold text-center">Lets Get Social !</h3>
-                            <div className='flex justify-evenly'>
-                                <div className="flex flex-col gap-4 mt-2 text-4xl space-y-5">
-                                    <FaInstagram />
-                                    <FaEnvelope />
-                                </div>
-                                <div className='border-l-4 border-white rounded-full'></div>
-                                <div className='flex flex-col  gap-4 mt-2 text-4xl space-y-5'>
-                                    <FaFacebookF />
-                                    <FaPaperPlane />
-                                </div>
-                                <div className='border-l-4 border-white rounded-full'></div>
 
-                                <div className="flex flex-col gap-4 mt-2 text-4xl space-y-5">
+                    <div className='lg:w-1/2 bg-[url("/home/homebg.png")] bg-center bg-cover w-full space-y-5 flex flex-col justify-center rounded-4xl p-2'>
+                        <h3 className="text-[clamp(2rem,3.5vw,50rem)] font-semibold text-center">Lets Get Social !</h3>
+                        <div className='flex justify-evenly'>
+                            <div className="flex flex-col gap-4 mt-2 text-4xl space-y-5">
+                                <FaInstagram />
+                                <FaEnvelope />
+                            </div>
+                            <div className='border-l-4 border-white rounded-full'></div>
+                            <div className='flex flex-col  gap-4 mt-2 text-4xl space-y-5'>
+                                <FaFacebookF />
+                                <FaPaperPlane />
+                            </div>
+                            <div className='border-l-4 border-white rounded-full'></div>
 
-                                    <FaWhatsapp />
+                            <div className="flex flex-col gap-4 mt-2 text-4xl space-y-5">
 
-                                    <FaPhoneAlt />
-                                </div>
+                                <FaWhatsapp />
+
+                                <FaPhoneAlt />
                             </div>
                         </div>
-
+                    </div>
+                    
+                    <div className='lg:w-1/2 w-full flex flex-col border border-white rounded-4xl p-4'>
                         <div className="mt-6">
                             <h2 className="text-3xl font-semibold mb-2 text-center">Have a <br />  <span className='text-6xl font-semibold'>Question?</span></h2>
-                            <div className="flex items-center bg-black rounded-full overflow-hidden px-3">
+                            <div className="flex items-center bg-black rounded-full overflow-hidden  justify-center max-w-md mx-auto">
                                 <button className="bg-black text-white p-3">
-                                    <FaSearch size={28} />
+                                    <FaSearch size={40} />
                                 </button>
-                                <input type="text" placeholder="Write Your Question Here" className="px-4 py-2 w-full text-white outline-none placeholder:text-2xl" />
+                                <input
+                                    type="text"
+                                    placeholder="Write Your Question Here"
+                                    className="px-4 py-2 w-full text-white outline-none placeholder:text-3xl border-b border-b-gray-300 "
+                                />
+
                             </div>
                         </div>
 
-                        <div className="mt-4">
+                        <div className="mt-4 flex flex-col gap-3">
                             <h4 className="text-md mb-2 font-medium text-center">Commonly Asked</h4>
-                            <div className="flex flex-col w-full justify-center items-center gap-2">
-                                {[1, 2, 3, 4].map((item) => (
-                                    <div key={item} className="flex items-center gap-2 w-full">
-                                        <strong className="bg-white h-2 w-2 rounded-full"></strong>
-                                        <span className="px-2 py-1 bg-white rounded-full text-md text-black text-center font-semibold w-full">
-                                            Write Your Question Here
-                                        </span>
-                                    </div>
-                                ))}
+                            <div className='flex gap-3 max-sm:flex-col'>
+                                <div className="flex items-center gap-2 w-1/2 max-sm:w-full">
+                                    <strong className="bg-white h-2 w-2 rounded-full"></strong>
+                                    <span className="px-2 py-1 bg-white rounded-full text-md text-black text-center font-semibold w-full">
+                                        Write Your Question Here
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2 w-1/2 max-sm:w-full">
+                                    <strong className="bg-white h-2 w-2 rounded-full"></strong>
+                                    <span className="px-2 py-1 bg-white rounded-full text-md text-black text-center font-semibold w-full">
+                                        Write Your Question Here
+                                    </span>
+                                </div>
                             </div>
+
+                            <div className='flex gap-3 max-sm:flex-col'>
+                                <div className="flex items-center gap-2 w-1/2 max-sm:w-full">
+                                    <strong className="bg-white h-2 w-2 rounded-full"></strong>
+                                    <span className="px-2 py-1 bg-white rounded-full text-md text-black text-center font-semibold w-full">
+                                        Write Your Question Here
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2 w-1/2 max-sm:w-full">
+                                    <strong className="bg-white h-2 w-2 rounded-full"></strong>
+                                    <span className="px-2 py-1 bg-white rounded-full text-md text-black text-center font-semibold w-full">
+                                        Write Your Question Here
+                                    </span>
+                                </div>
+                            </div>
+
 
                         </div>
                     </div>

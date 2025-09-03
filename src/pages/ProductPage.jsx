@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { FaStar } from "react-icons/fa";
 import { RiShoppingBag3Fill } from "react-icons/ri";
 import { FaTruck } from "react-icons/fa";
@@ -6,7 +6,28 @@ import { FaSackDollar } from "react-icons/fa6";
 import { HiBadgeCheck } from "react-icons/hi";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import caseData from '../json/phonecasefiter.json'
+import { useParams } from "react-router-dom";
+import axios from 'axios';
 const ProductPage = () => {
+  const { productId } = useParams();
+
+  // ==================product api call====================
+  const [products, setProducts] = useState({});
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(
+          `https://black5creations.orbitalwebworks.com/api/products/${productId}`
+        );
+
+        setProducts(res.data.data.product);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+      }
+    };
+    fetchProducts();
+  }, [productId]);
+  // ==================product api call====================
 
   const reviews = [
     { id: 1, name: 'Ruma Bose', text: 'Ruma Bo gfg vgfgfg vgse etffhefdgvdgyr relef vfgv', images: [1, 2, 3] },
@@ -79,7 +100,7 @@ const ProductPage = () => {
             <div className='bg-[#ebebeb] flex items-center justify-center rounded-l-2xl max-md:rounded-t-2xl max-md:rounded-b-none max-[1270px]:flex-[1]'>
               <div className=' p-5 rounded-l-2xl h-fit'>
                 <img loading='lazy'
-                  src="/4productpage/2img.png" // replace with actual path
+                  src={products.image_link}// replace with actual path
                   alt="Mayur Mayuri Case"
                   className="w-[260px] h-auto rounded-xl"
                 />
@@ -107,7 +128,7 @@ const ProductPage = () => {
 
           {/* Product Info */}
           <div className="w-full xl:w-2/3 space-y-4">
-            <h2 className="text-5xl font-semibold">Mayur Mayuri</h2>
+            <h2 className="text-5xl font-semibold">{products.name}</h2>
 
             {/* <div className="">
               <span ></span>
@@ -136,19 +157,25 @@ const ProductPage = () => {
             </div>
 
             {/* Benefits */}
-            <ul className="list-disc list-inside text-md space-y-1 text-gray-700">
-              <li>Tempered glass back with a glossy finish</li>
-              <li>Rubber edges for soft landing and a good grip</li>
-              <li>Edge-to-edge standard buttons and ports</li>
-              <li>Sleek style</li>
-              <li>Case friendly charging</li>
-            </ul>
+            <div className='flex flex-col gap-2'>
+              {(products?.sort_description || "")
+                .split('</p>') // split each <p> tag
+                .map(item => item.replace('<p>', '').trim()) // remove opening <p> and trim
+                .filter(item => item !== '') // remove empty strings
+                .map((desc, idx) => (
+                  <div key={idx} className='flex items-start gap-2'>
+                    <strong className='bg-black h-2 w-2 rounded-full mt-2'></strong>
+                    <p className='text-gray-700 text-md'>{desc}</p>
+                  </div>
+                ))
+              }
+            </div>
 
             {/* Price */}
             <div className="flex items-center gap-4  border-3 border-black rounded-lg w-fit h-fit px-1 py-0 ">
               <div className='flex flex-col'>
                 <p>Include All Taxes</p>
-                <span className="text-sm font-semibold text-black">Rs. <span className='text-3xl'>299/-</span> Only</span>
+                <span className="text-sm font-semibold text-black">Rs. <span className='text-3xl'>{products.total_price}/-</span> Only</span>
               </div>
               <div className='bg-black px-4 py-1  rounded-lg hover:bg-gray-800 flex flex-col justify-center items-center'>
                 <RiShoppingBag3Fill className='text-xl' color='white' />
@@ -167,10 +194,14 @@ const ProductPage = () => {
             <div className="mt-4">
               <h3 className='font-semibold'>Product Description</h3>
               <ul>
-                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit.</li>
-                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit.</li>
-                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit.</li>
-                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit.</li>
+                {(products?.long_description || "")
+                  .split('</p>') // split each <p> tag
+                  .map(item => item.replace('<p>', '').trim()) // remove opening <p> and trim
+                  .filter(item => item !== '') // remove empty strings
+                  .map((desc, idx) => (
+                    <li key={idx}>{desc}</li>
+                  ))
+                }
               </ul>
             </div>
 
@@ -179,7 +210,7 @@ const ProductPage = () => {
               <div className='flex flex-wrap gap-y-2 items-end justify-between bg-white rounded-b-2xl px-4 py-2'>
                 <div>
                   <p>The phone model you choose</p>
-                  <p>iphone 16 pro max</p>
+                  <p>{products.name}</p>
                 </div>
                 <div className='space-x-4'>
                   <button className='bg-black rounded-full  py-1 text-white w-24 text-md'>yes !</button>
