@@ -14,7 +14,7 @@ const Header = () => {
         <div className='flex gap-8'>
           <Link to={"/"} className='text-white underline text-[1.2rem]'>Home</Link>
           <Link to={"/phonecase"} className='text-white underline text-[1.2rem]'>Phone Cases</Link>
-          <Link to={"/product"} className='text-white underline text-[1.2rem]'>Product Page</Link>
+          {/* <Link to={"/product"} className='text-white underline text-[1.2rem]'>Product Page</Link> */}
           <Link to={"/wallart"} className='text-white underline text-[1.2rem]'>Wall Art</Link>
           <Link to={"/wallartproduct"} className='text-white underline text-[1.2rem]'>Wall Art Product</Link>
           <Link to={"/customise"} className='text-white underline text-[1.2rem]'>Customise</Link>
