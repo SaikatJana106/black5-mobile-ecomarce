@@ -129,27 +129,20 @@ const ProductPage = () => {
           {/* Product Info */}
           <div className="w-full xl:w-2/3 space-y-4">
             <h2 className="text-5xl font-semibold">{products.name}</h2>
-
-            {/* <div className="">
-              <span ></span>
-              <span ></span>
-              <span className="px-2 py-1 bg-black/30 rounded-full text-xs text-white"></span>
-            </div> */}
-            <div className='  text-lg flex flex-col max-[1270px]:flex-row max-[1270px]:flex-wrap items-start w-fit gap-2 '>
-              <div className='flex justify-center items-center gap-2'>
-                <strong className='bg-black h-2 w-2 rounded-full'></strong>
-                <span className="px-2  bg-black rounded-full text-lg text-white">Premium Metal Case</span>
-              </div>
-
-              <div className='flex justify-center items-center gap-2'>
-                <strong className='bg-black h-2 w-2 rounded-full'></strong>
-                <span className="px-2  bg-black/30 rounded-full text-lg text-white">Premium Soft Case</span>
-              </div>
-
-              <div className='flex justify-center items-center gap-2'>
-                <strong className='bg-black h-2 w-2 rounded-full'></strong>
-                <span className="px-2  bg-black/30 rounded-full text-lg text-white">Premium Hard Case</span>
-              </div>
+            <div className="text-lg flex flex-col max-[1270px]:flex-row max-[1270px]:flex-wrap items-start w-fit gap-2">
+              {products?.variations?.map((variation, variationIndex) => (
+                variation.options.map((option, optionIndex) => (
+                  <div key={`${variationIndex}-${optionIndex}`} className="flex justify-center items-center gap-2">
+                    <strong className="bg-black h-2 w-2 rounded-full"></strong>
+                    <span
+                      className={`px-2 rounded-full text-lg text-white ${optionIndex === 0 ? "bg-black" : "bg-black/30"
+                        }`}
+                    >
+                      {option.variation_name}
+                    </span>
+                  </div>
+                ))
+              ))}
             </div>
 
             <div className="flex items-center text-yellow-500 text-lg">

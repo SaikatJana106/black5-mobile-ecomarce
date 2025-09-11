@@ -86,13 +86,13 @@ const Phonecase = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch("https://black5creations.orbitalwebworks.com/api/categories");
-        const data = await res.json();
+        const res = await axios.get("https://black5creations.orbitalwebworks.com/api/categories");
 
         // only home + root categories
-        const filtered = data.data.categories.data.filter(
-          (c) => c.is_home === 1 && c.parent_id === null
+        const filtered = await res.data.data.categories.data.find(
+          (c) => c.is_home === 1 && c.parent_id === null &&  c.slug === "phone-case"
         );
+        console.log(filtered);
         setCategories(filtered);
       } catch (err) {
         console.error("Error fetching categories:", err);
@@ -102,8 +102,6 @@ const Phonecase = () => {
     fetchCategories();
   }, []);
 
-  // get selected category
-  const selected = categories.find((c) => c.slug === "phone-case");
   // =================category api call ===========================
 
   // ==================product api call====================
@@ -119,8 +117,10 @@ const Phonecase = () => {
           `https://black5creations.orbitalwebworks.com/api/products`
         );
 
-        const productData = res.data.data.products;
-        setProducts(productData.data); // products array
+        const productData = res.data.data.products.data.filter(
+          (productfilter) => productfilter.stock>0 && productfilter.is_visible===1
+        );
+        setProducts(productData); // products array
       } catch (err) {
         console.error("Error fetching products:", err);
       } finally {
@@ -137,7 +137,7 @@ const Phonecase = () => {
     const fetchBrands = async () => {
       try {
         const res = await axios.get(
-          `https://black5creations.orbitalwebworks.com/api/brands`
+          `${import.meta.env.VITE_API_URL}/brands`
         );
         console.log(res.data);
         const brandsdata = res.data.data.brands.data;
@@ -169,7 +169,7 @@ const Phonecase = () => {
       </div>
 
       {/* ✅ Phone Selector and Category Section */}
-      <section className="flex max-[1400px]:flex-col flex-row items-start justify-center md:p-8 p-3  bg-cover bg-center h-fit text-black rounded-3xl -mt-16 z-10 relative w-[85%] max-lg:w-[95%] mx-auto max-w-[1400px]"
+      <section className="flex max-[1400px]:flex-col flex-row items-start justify-center md:p-8 p-3  bg-cover bg-center h-fit text-black rounded-4xl -mt-16 z-10 relative w-[85%] max-lg:w-[95%] mx-auto max-w-[1400px]"
         style={{ backgroundImage: "url('/2phonecover/2banner.png')" }}
       >
         {/* Left Side - Select Phone */}
@@ -263,14 +263,14 @@ const Phonecase = () => {
             {phoneCases.map((item) => (
               <div
                 key={item.id}
-                className="min-w-[150px] max-w-[150px] flex-shrink-0 text-center relative"
+                className="min-w-[300px] max-w-[300px] flex-shrink-0 text-center relative"
               >
                 <img loading='lazy'
                   src={item.image}
                   alt={item.name}
                   className="w-full h-auto rounded-lg shadow-md "
                 />
-                <div className='absolute top-0 left-2 '>
+                <div className='absolute top-2 left-[5%] '>
                   <h3 className="mt-2 text-sm font-semibold">{item.name}</h3>
                   <div className="flex mt-1 text-yellow-400 text-sm">
                     {Array(5)
@@ -293,37 +293,6 @@ const Phonecase = () => {
 
 
       {/*---------------------------- case oprtion choose -------------------------------------------- */}
-      {/* <section>
-        <div className="text-center mb-6">
-          <button className="px-4 py-1 bg-white text-black rounded-full font-medium mb-2 text-2xl">
-            Explore Our Cases
-          </button>
-          <p className="text-gray-400">The Feature Panel</p>
-        </div>
-
-        <div className="flex flex-wrap gap-2 items-start justify-around p-8 my-5  bg-cover bg-center h-fit text-black rounded-3xl z-10 relative w-[85%] max-lg:w-[90%] max-w-[1400px] mx-auto"
-          style={{ backgroundImage: "url('/2phonecover/3banner.png')" }}
-        >
-          {cases.map((item, index) => (
-            <div
-              key={index}
-              className="flex flex-col items-center text-center space-y-3"
-            >
-              <div className="w-[120px] h-[120px] rounded-full overflow-hidden shadow-lg bg-black relative">
-                <img
-                  src={item.img}
-                  alt={item.title}
-                  className="w-full h-full object-contain absolute top-[20%]"
-                />
-              </div>
-              <h3 className="text-xl font-bold">{item.title}</h3>
-              <p className="text-xs text-black hover:underline cursor-pointer underline">
-                {item.link}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section> */}
       <section className='py-8'>
         <div className="text-center mb-6">
           <button className="px-4 py-1 bg-white text-black rounded-full font-medium mb-2 text-2xl">
@@ -345,8 +314,8 @@ const Phonecase = () => {
             ref={categoryscrollRef}
             className="flex gap-5 overflow-x-hidden scrollbar-hide scroll-smooth px-8"
           >
-            {selected && selected.children?.length > 0 ? (
-              selected.children.map((child) => (
+            {categories && categories.children?.length > 0 ? (
+              categories.children.map((child) => (
                 <div
                   key={child.id}
                   className="min-w-[15rem] bg-cover bg-center rounded-t-full h-[24rem] flex flex-col justify-end items-center"
@@ -472,11 +441,13 @@ const Phonecase = () => {
                   .filter((item) => item.name === name)
                   .map((item) => (
                     <div key={item.id} className="flex flex-col items-center text-center space-y-1">
+                      <Link to={`/phone-case-product/${item.id}`}>
                       <img
                         src={item.image_link ? item.image_link : "/4productpage/1img.png"}
                         alt={item.name}
                         className="h-fit w-fit object-cover rounded-md max-h-60"
                       />
+                      </Link>
                       <Link to={`/phone-case-product/${item.id}`} className="text-xs font-medium hover:underline">{item.name}</Link >
                       <div className="text-yellow-500 text-sm">
                         {"★".repeat(4)}{"☆".repeat(1)}

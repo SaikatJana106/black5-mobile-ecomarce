@@ -1,12 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-
+import { FaUser } from "react-icons/fa";
+import { MdEmail, MdLock } from "react-icons/md";
 const Login = () => {
     return (
-        <div>
+        <div className='bg-white'>
             <div className="flex min-h-screen w-[90%] max-w-[1400px] mx-auto max-[850px]:flex-col gap-2">
                 {/* Left Section */}
-                <div className=" text-white flex flex-col justify-center items-center w-[48%] max-[850px]:w-full p-8">
+                <div className=" text-white flex flex-col justify-center items-center w-fit max-[850px]:w-full p-8 bg-black rounded-4xl m-8 mx-auto max-w-fit">
                     <h1 className="text-4xl font-bold">Wellcome !</h1>
                     <p className="mt-2 text-lg border-b border-gray-400 pb-1">
                         Create an Account
@@ -41,7 +42,7 @@ const Login = () => {
                     {/* Form Fields */}
                     <div className="mt-4 w-72 space-y-3">
                         <div className="flex items-center border border-gray-400 rounded-full px-3 py-2">
-                            <span className="material-icons">person</span>
+                            <FaUser className='text-white'/>
                             <input
                                 type="text"
                                 placeholder="Name:"
@@ -49,7 +50,7 @@ const Login = () => {
                             />
                         </div>
                         <div className="flex items-center border border-gray-400 rounded-full px-3 py-2">
-                            <span className="material-icons">email</span>
+                            <MdEmail className='text-white'/>
                             <input
                                 type="email"
                                 placeholder="Email:"
@@ -57,7 +58,7 @@ const Login = () => {
                             />
                         </div>
                         <div className="flex items-center border border-gray-400 rounded-full px-3 py-2">
-                            <span className="material-icons">lock</span>
+                           <MdLock className='text-white'/>
                             <input
                                 type="password"
                                 placeholder="Password:"
@@ -72,12 +73,12 @@ const Login = () => {
                 </div>
 
                 {/* Right Section */}
-                <div className=" flex flex-col justify-center items-center w-[48%] max-[850px]:w-full p-8">
-                    <div className="bg-white text-black px-6 py-2 rounded-full text-lg font-medium">
+                <div className=" flex flex-col justify-center items-center w-auto max-w-xl mx-auto max-[850px]:w-full p-8 bg-white">
+                    <div className="bg-black text-white px-6 py-2 rounded-full text-lg font-medium">
                         What Is
                     </div>
-                    <h2 className="mt-4 text-3xl font-bold text-white">Platinum Card</h2>
-                    <p className="text-sm text-gray-400">By Black5 Creatives</p>
+                    <h2 className="mt-4 text-3xl font-bold">Platinum Card</h2>
+                    <p className="text-sm text-gray-600">By Black5 Creatives</p>
 
                     {/* Logos */}
                     {/* <div className="mt-4 grid grid-cols-4 gap-3">
@@ -92,13 +93,13 @@ const Login = () => {
                                 />
                             ))}
                     </div> */}
-                    <div className='h-30 w-30'>
-                        <img src="/4productpage/product-logo.png" className='h-full w-full object-center object-cover' alt="logo" />
+                    <div className='h-30 w-full'>
+                        <img src="/login/login_right.png" className='h-full w-full object-center object-contain' alt="logo" />
                     </div>
 
                     <hr className="my-4 w-3/4 border-gray-500" />
 
-                    <p className="text-xs text-center px-6 text-white">
+                    <p className="text-xs text-center px-6">
                         ifelftry vfgro;jvgfr pokgvpr ty grt gry5ty Ruma Bo gfrg vdfdrfg
                         vgse edfwfftedgvdgrv ifelftry vfgro;jvgfr pokgvpr ty y5tygoi yktkhg
                         5tery
@@ -106,10 +107,10 @@ const Login = () => {
 
                     <hr className="my-4 w-3/4 border-gray-500" />
 
-                    <p className="mt-4 text-xl text-white">Done Creating</p>
-                    <h3 className="text-4xl font-bold text-white">Your Acount ?</h3>
+                    <p className="mt-4 text-xl">Done Creating</p>
+                    <h3 className="text-4xl font-bold">Your Acount ?</h3>
 
-                    <Link to={"/congratulation"} className="mt-3 bg-white text-black px-6 py-2 rounded-full">
+                    <Link to={"/congratulation"} className="mt-3 bg-black text-white px-6 py-2 rounded-full">
                         Lets Open Your Card
                     </Link>
                 </div>

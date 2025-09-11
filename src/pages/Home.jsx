@@ -13,6 +13,7 @@ import { IoIosArrowDown, IoIosArrowUp, IoIosArrowBack, IoIosArrowForward } from 
 import { FaChevronLeft, FaChevronRight, FaStar } from "react-icons/fa";
 import { CiSearch } from 'react-icons/ci';
 import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from "react-icons/md";
+import axios from 'axios';
 const Home = () => {
     const reviews = Array(8).fill({
         title: 'Best Artistic Designs',
@@ -31,22 +32,22 @@ const Home = () => {
         {
             name: "Mayur Mayuri",
             price: "299/-",
-            image: "/2phonecover/1.png", // Replace with real paths
+            image: "/2phonecover/1.png",
         },
         {
             name: "Mayur Mayuri",
             price: "299/-",
-            image: "/2phonecover/1.png", // Replace with real paths
+            image: "/2phonecover/1.png",
         },
         {
             name: "Mayur Mayuri",
             price: "299/-",
-            image: "/2phonecover/1.png", // Replace with real paths
+            image: "/2phonecover/1.png",
         },
         {
             name: "Mayur Mayuri",
             price: "299/-",
-            image: "/2phonecover/1.png", // Replace with real paths
+            image: "/2phonecover/1.png",
         },
     ];
     const scrollRef = useRef(null);
@@ -68,11 +69,9 @@ const Home = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const res = await fetch("https://black5creations.orbitalwebworks.com/api/categories");
-                const data = await res.json();
-
+                const res = await axios.get("https://black5creations.orbitalwebworks.com/api/categories");
                 // only home + root categories
-                const filtered = data.data.categories.data.filter(
+                const filtered = await res.data.data.categories.data.filter(
                     (c) => c.is_home === 1 && c.parent_id === null
                 );
                 setCategories(filtered);
@@ -87,6 +86,35 @@ const Home = () => {
     // get selected category
     const selected = categories.find((c) => c.slug === categoryActiveSlug);
     // =================category api call ===========================
+
+
+    // ==================product api call====================
+    // const [products, setProducts] = useState([]);
+    const [bestSellingMobileProducts, setBestSellingMobileProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+
+
+        const fetchProducts = async (page = 1) => {
+            try {
+                setLoading(true);
+                const res = await axios.get(
+                    `https://black5creations.orbitalwebworks.com/api/products`
+                );
+
+                const bestsellmobileproductData = res.data.data.products.data.filter(
+                    (bestsellmobileproductfilter) => bestsellmobileproductfilter.stock > 0 && bestsellmobileproductfilter.is_visible === 1 && bestsellmobileproductfilter.is_best_selling === 1
+                );
+                setBestSellingMobileProducts(bestsellmobileproductData); // products array
+            } catch (err) {
+                console.error("Error fetching products:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProducts();
+    }, []);
+    // ==================product api call====================
 
     return (
         <div>
@@ -113,19 +141,24 @@ const Home = () => {
 
                     {/* Two Product Cards */}
                     <div className="flex justify-between gap-4">
-                        <div className="bg-[#ebebeb] w-1/2 rounded-2xl p-2 flex flex-col items-center overflow-hidden">
+                        <div className="bg-white w-1/2 rounded-3xl p-2 flex flex-col items-center overflow-hidden">
                             <p className="text-black text-sm mb-2 underline font-semibold">Phone Case</p>
-                            <div className=" rounded-xl bg-[url('/home/design.png')] bg-cover bg-center h-40 w-40 flex justify-center items-center">
-                                <img className="h-40 rounded-xl" src="/4productpage/2img.png" alt="Phone Case" />
+                            <div className='bg-[#eeeeee] rounded-4xl p-4 flex flex-col justify-center items-center w-full'>
+                                <div className=" rounded-xl bg-[url('/home/design.png')] bg-cover bg-center h-40 w-40 flex justify-center items-center">
+                                    <img className="h-40 rounded-xl" src="/4productpage/2img.png" alt="Phone Case" />
+                                </div>
+
+                                <button className="mt-2 px-3 py-1 text-xs bg-black text-white rounded-full">Shop Now</button>
                             </div>
-                            <button className="mt-2 px-3 py-1 text-xs bg-black text-white rounded-full">Shop Now</button>
                         </div>
-                        <div className="bg-[#ebebeb] w-1/2 rounded-2xl p-2 flex flex-col items-center overflow-hidden">
+                        <div className="bg-white w-1/2 rounded-3xl p-2 flex flex-col items-center overflow-hidden">
                             <p className="text-black text-sm mb-2 underline font-semibold">Wall art</p>
-                            <div className=" rounded-xl bg-[url('/home/design.png')] bg-cover bg-center h-40 w-32 flex justify-center items-center">
-                                <img className="h-24 rounded-xl" src="/5wallartproduct/persion.png" alt="Wall Art" />
+                            <div className='bg-[#eeeeee] rounded-4xl p-4 flex flex-col justify-center items-center w-full'>
+                                <div className=" rounded-xl bg-[url('/home/design.png')] bg-cover bg-center h-40 w-32 flex justify-center items-center">
+                                    <img className="h-24 rounded-xl" src="/5wallartproduct/persion.png" alt="Wall Art" />
+                                </div>
+                                <button className="mt-2 px-3 py-1 text-xs bg-black text-white rounded-full">Shop Now</button>
                             </div>
-                            <button className="mt-2 px-3 py-1 text-xs bg-black text-white rounded-full">Shop Now</button>
                         </div>
                     </div>
                 </div>
@@ -134,13 +167,6 @@ const Home = () => {
                 <div className="max-[780px]:w-full w-[48%] bg-[url('/home/homebg.png')] bg-cover bg-center rounded-3xl relative overflow-hidden flex flex-col justify-center p-4 mt-4 lg:mt-0">
                     <div className='flex items-center justify-center'>
                         <img src="/home/phone.png" alt="Main Phone Case" className="h-[25rem] mx-auto drop-shadow-2xl object-cover object-center" />
-
-                        {/* Side Switcher */}
-                        {/* <div className="absolute top-10 right-4 bg-white rounded-full shadow-lg p-2 space-y-2">
-                            <img src="/w1.png" className="h-12 rounded-md" alt="Switch 1" />
-                            <img src="/5wallartproduct/persion.png" className="h-12 rounded-md" alt="Switch 2" />
-                        </div> */}
-
                         <div className='absolute top-10 right-4 h-40 w-14 bg-white rounded-full  flex items-center justify-center flex-col gap-4'>
                             <div className='flex items-center justify-center flex-col gap-1 bg-[#b7b7b7] w-full h-1/2 rounded-t-full pt-1'>
                                 <img loading='lazy' className='h-16 w-fit' src="/4productpage/1img.png" alt="" />
@@ -303,270 +329,271 @@ const Home = () => {
 
                         <IoIosArrowBack />
                     </div>
-                    <button className="bg-black text-white mt-4 rounded-full px-6 py-2 text-[clamp(0.80rem,1vw,1.75rem)]">View All Video Reviews</button>
+                    {/*<button className="bg-black text-white mt-4 rounded-full px-6 py-2 text-[clamp(0.80rem,1vw,1.75rem)]">View All Video Reviews</button>*/}
                 </div>
             </div>
 
 
+            <div className='flex flex-col max-xl:flex-col-reverse'>
+                <section className="flex flex-row gap-6  w-[85%] max-xl:w-[98%] mx-auto text-white max-lg:max-w-xl">
+                    {/* Sidebar */}
+                    <div className="w-full lg:w-1/5 flex flex-col gap-4 self-center max-lg:hidden">
+                        <ul className="space-y-3 text-sm flex flex-col items-start justify-start max-lg:items-center">
+                            <div className='flex lg:flex-col gap-2' style={{ columnGap: '2rem' }}>
+                                <li className="flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-white"></span> Upload an Image
+                                </li>
+                                <li className="flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-white"></span> Private Customization
+                                </li>
+                            </div>
 
-            <div className="flex flex-row gap-6  w-[85%] max-xl:w-[98%] mx-auto text-white max-lg:max-w-xl">
-                {/* Sidebar */}
-                <div className="w-full lg:w-1/5 flex flex-col gap-4 self-center max-lg:hidden">
-                    <ul className="space-y-3 text-sm flex flex-col items-start justify-start max-lg:items-center">
-                        <div className='flex lg:flex-col gap-2' style={{ columnGap: '2rem' }}>
-                            <li className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-white"></span> Upload an Image
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-white"></span> Private Customization
-                            </li>
-                        </div>
+                            <div className='flex lg:flex-col gap-2' style={{ columnGap: '2rem' }}>
+                                <li className="flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-white"></span> Customized Gifting
+                                </li>
+                                <li className="flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-white"></span> Bulk Corporate Gifting
+                                </li>
+                            </div>
+                        </ul>
 
-                        <div className='flex lg:flex-col gap-2' style={{ columnGap: '2rem' }}>
-                            <li className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-white"></span> Customized Gifting
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-white"></span> Bulk Corporate Gifting
-                            </li>
-                        </div>
-                    </ul>
+                        <h3 className="mt-6 text-xl font-semibold">Customize</h3>
+                        <div className=" h-48 bg-white rounded-4xl mt-2 w-32"></div>
+                    </div>
+                    <div className='border-l-4 border-white h-100vh rounded-full max-lg:hidden'></div>
 
-                    <h3 className="mt-6 text-xl font-semibold">Customize</h3>
-                    <div className=" h-44 bg-white rounded-md mt-2 w-40"></div>
-                </div>
-                <div className='border-l-4 border-white h-100vh rounded-full max-lg:hidden'></div>
+                    {/* Center Content */}
+                    <div className="w-full lg:w-3/5 text-black rounded-xl  relative mx-auto">
+                        <div className='bg-white rounded-4xl min-h-fit min-w-fit'>
+                            <div className="flex flex-col-reverse md:flex-row items-center bg-white px-5 rounded-4xl py-2 max-md:w-fit w-full" style={{ justifySelf: 'center' }}>
+                                <div className="flex-1">
+                                    <h1 className="font-bold text-[clamp(1.5rem,1.8vw,2.5rem)]">
+                                        We Can <br />
+                                        <span className="text-[clamp(1.5rem,2vw,3rem)]">Customize For You</span>
+                                    </h1>
 
-                {/* Center Content */}
-                <div className="w-full lg:w-3/5 text-black rounded-xl  relative mx-auto">
-                    <div className='bg-white rounded-4xl min-h-fit min-w-fit'>
-                        <div className="flex flex-col-reverse md:flex-row items-center bg-white px-5 rounded-4xl py-2 max-md:w-fit w-full" style={{ justifySelf: 'center' }}>
-                            <div className="flex-1">
-                                <h1 className="font-bold text-[clamp(1.5rem,1.8vw,2.5rem)]">
-                                    We Can <br />
-                                    <span className="text-[clamp(1.5rem,2vw,3rem)]">Customize For You</span>
-                                </h1>
+                                    <p className="text-sm mt-1">lets customize your special moments for us</p>
 
-                                <p className="text-sm mt-1">lets customize your special moments for us</p>
-
-                                <div className="mt-4 flex flex-wrap gap-3 items-center">
-                                    <div className='bg-black text-white rounded-full p-2 flex items-center'>
-                                        <HiOutlineLightBulb size={28} />
+                                    <div className="mt-4 flex flex-wrap gap-3 items-center">
+                                        <div className='bg-black text-white rounded-full p-2 flex items-center'>
+                                            <HiOutlineLightBulb size={28} />
+                                        </div>
+                                        <button className="bg-black text-white rounded-full px-4 py-2 flex items-center">
+                                            Phone Case
+                                        </button>
+                                        <button className="bg-black text-white rounded-full px-4 py-2 flex items-center">Wall Art</button>
                                     </div>
-                                    <button className="bg-black text-white rounded-full px-4 py-2 flex items-center">
-                                        Phone Case
+                                </div>
+
+                                <img
+                                    src={statueImage}
+                                    alt="Statue"
+                                    className="rounded-xl w-[clamp(12rem,20vw,16rem)] h-[clamp(12rem,20vw,16rem)] -mt-[clamp(1rem,5vw,2.5rem)]"
+                                />
+
+                            </div>
+                            <div className='lg:hidden flex justify-around'>
+                                <div className='flex flex-col items-center'>
+                                    <h3 className="text-white text-lg font-semibold mb-2">Phone Case</h3>
+                                    <div className="bg-white h-44 rounded-4xl mb-2 w-40 p-2 flex flex-col">
+                                        <div className="   h-40 w-32 flex justify-center items-center">
+                                            <img className="h-24 rounded-xl" src="/4productpage/2img.png" alt="Wall Art" />
+                                        </div>
+                                        <button className="w-full bg-black text-white py-2 rounded-full mt-auto">Customize Yours</button>
+                                    </div>
+                                </div>
+                                <div className='flex flex-col items-center'>
+                                    <h3 className="text-white text-lg font-semibold mb-2">Wall Art</h3>
+                                    <div className="bg-white h-44 rounded-4xl mb-2 w-40 p-2 flex flex-col">
+                                        <div className="   h-40 w-32 flex justify-center items-center">
+                                            <img className="h-24 rounded-xl" src="/5wallartproduct/persion.png" alt="Wall Art" />
+                                        </div>
+                                        <button className="w-full bg-black text-white py-2 rounded-full mt-auto">Customize Yours</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className='lg:hidden my-4'>
+                            <div className='flex justify-around' style={{ columnGap: '2rem' }}>
+                                <li className="flex items-center gap-2 text-white text-[clamp(0.9rem,1vw,50rem)]">
+                                    <span className="w-2 h-2 rounded-full bg-white"></span> Upload an Image
+                                </li>
+                                <li className="flex items-center gap-2 text-white text-[clamp(0.9rem,1vw,50rem)]">
+                                    <span className="w-2 h-2 rounded-full bg-white"></span> Private Customization
+                                </li>
+                            </div>
+
+                            <div className='flex justify-around' style={{ columnGap: '2rem' }}>
+                                <li className="flex items-center gap-2 text-white text-[clamp(0.9rem,1vw,50rem)]">
+                                    <span className="w-2 h-2 rounded-full bg-white"></span> Customized Gifting
+                                </li>
+                                <li className="flex items-center gap-2 text-white text-[clamp(0.9rem,1vw,50rem)]">
+                                    <span className="w-2 h-2 rounded-full bg-white"></span> Bulk Corporate Gifting
+                                </li>
+                            </div>
+                        </div>
+
+                        <div className="my-6">
+                            <p className="text-center mb-3 text-white">Do you have a cretive design idea? Share with Us! We Will Make it for you!</p>
+                            <div className="flex gap-2 items-center bg-white rounded-full h-fit ">
+                                <input
+                                    type="text"
+                                    placeholder="Write Down You Idea Here!"
+                                    className="flex-1 rounded-full px-4 py-2 text-sm bg-white"
+                                />
+                                <button className="bg-black text-white rounded-full py-2 px-5 my-1 mx-1 text-sm">Submit Idea</button>
+                            </div>
+                        </div>
+
+
+                        <div className='flex flex-col justify-center items-center'>
+                            <IoIosArrowDown className='text-black shadow-2xl w-fit h-fit bg-gray-100 rounded-full text-xl' />
+                            <div className="space-y-6 flex-[1] max-h-80 overflow-auto scrollbar-hide max-lg:w-full">
+                                {ideas.map((item, idx) => (
+                                    <div key={item.id} className="flex flex-col lg:flex-row items-start lg:items-center flex-wrap gap-4 border-b-2 p-5 bg-black text-white">
+                                        <div className='flex flex-wrap items-center gap-4'>
+                                            <div className="w-3 h-3 bg-white rounded-full mt-1"></div>
+                                            <div className="h-10 w-10 rounded-full bg-white" />
+                                            <h4 className="font-semibold">{item.name}</h4>
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-sm line-clamp-2">
+                                                {item.text}...<span className="underline px-2">See More</span>
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <button className="text-white">See Design</button>
+                                            <span className="text-2xl">🤍</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <IoIosArrowUp className='text-black shadow-2xl w-fit h-fit bg-gray-100 rounded-full text-xl' />
+                        </div>
+                    </div>
+                    <div className='border-l-4 border-white h-100vh rounded-full max-lg:hidden'></div>
+
+                    {/* Right Cards */}
+                    <div className="w-full lg:w-1/5 flex flex-col gap-6 self-center max-lg:hidden">
+                        <div className='flex flex-col items-start'>
+                            <h3 className="text-white text-lg font-semibold mb-2">Phone Case</h3>
+                            <div className="bg-white h-44 rounded-4xl mb-2 w-40 p-2 flex flex-col">
+                                <button className="w-full bg-black text-white py-2 rounded-full mt-auto">Customize Yours</button>
+                            </div>
+                        </div>
+                        <div className='flex flex-col items-start'>
+                            <h3 className="text-white text-lg font-semibold mb-2">Wall Art</h3>
+                            <div className="bg-white h-44 rounded-4xl mb-2 w-40 p-2 flex flex-col">
+                                <button className="w-full bg-black text-white py-2 rounded-full mt-auto">Customize Yours</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <div className='flex flex-col'>
+                    <section className=" text-white py-10">
+                        <div className="w-[95%] xl:w-[90%] mx-auto flex flex-col lg:flex-row items-center justify-center relative max-w-[1400px] max-xl:max-w-2xl">
+
+                            <div className="bg-white text-black rounded-4xl px-6 max-md:px-2 py-8 w-[60%] -mr-56 mb-10 max-lg:w-full  max-lg:-mr-0">
+
+                                <h3 className="text-center text-sm mb-1 font-light">A Premium Experience In Every Detail</h3>
+                                <h2 className="text-center text-[clamp(1rem,1.5vw,50rem)] font-bold my-4">
+                                    <span className="bg-black text-white px-4 py-1 rounded-full">Our Best Selling Phone Cases</span>
+                                </h2>
+                                <div className='flex items-center justify-between gap-2 max-w-[400px]'>
+                                    <button className=" bg-black text-white p-2 rounded-full z-20 h-fit">
+                                        <FaChevronLeft />
                                     </button>
-                                    <button className="bg-black text-white rounded-full px-4 py-2 flex items-center">Wall Art</button>
+                                    <div className="flex justify-start gap-5 overflow-auto  max-lg:w-[95%] scrollbar-hide">
+                                        {bestSellingMobileProducts.map((product, index) => (
+                                            <div key={index} className="text-center flex-shrink-0">
+                                                <img src={product.image_link} alt={product.name} className="max-w-40 w-full h-64 object-contain mx-auto" />
+                                                <h3 className="mt-3 font-semibold">{product.name}</h3>
+                                                <div className="flex justify-center text-yellow-500 my-1">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <FaStar key={i} className="text-sm" />
+                                                    ))}
+                                                </div>
+                                                <div className="bg-black text-white px-3 py-1 rounded-full inline-block mt-1">
+                                                    Price: {product.total_price}
+                                                </div>
+                                                <div>
+                                                    <button className="underline text-sm mt-2">More Details</button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <button className="bg-black text-white p-2 rounded-full z-20 h-fit">
+                                        <FaChevronRight />
+                                    </button>
+                                </div>
+                                <div className="text-center mt-6">
+                                    <button className="underline font-medium">View All Phone Cases</button>
                                 </div>
                             </div>
 
-                            <img
-                                src={statueImage}
-                                alt="Statue"
-                                className="rounded-xl w-[clamp(12rem,20vw,16rem)] h-[clamp(12rem,20vw,16rem)] -mt-[clamp(1rem,5vw,2.5rem)]"
-                            />
-
-                        </div>
-                        <div className='lg:hidden flex justify-around'>
-                            <div className='flex flex-col items-center'>
-                                <h3 className="text-white text-lg font-semibold mb-2">Phone Case</h3>
-                                <div className="bg-white h-44 rounded-md mb-2 w-40 p-2 flex flex-col">
-                                    <div className="   h-40 w-32 flex justify-center items-center">
-                                        <img className="h-24 rounded-xl" src="/4productpage/2img.png" alt="Wall Art" />
-                                    </div>
-                                    <button className="w-full bg-black text-white py-2 rounded-full mt-auto">Customize Yours</button>
-                                </div>
-                            </div>
-                            <div className='flex flex-col items-center'>
-                                <h3 className="text-white text-lg font-semibold mb-2">Wall Art</h3>
-                                <div className="bg-white h-44 rounded-md mb-2 w-40 p-2 flex flex-col">
-                                    <div className="   h-40 w-32 flex justify-center items-center">
-                                        <img className="h-24 rounded-xl" src="/5wallartproduct/persion.png" alt="Wall Art" />
-                                    </div>
-                                    <button className="w-full bg-black text-white py-2 rounded-full mt-auto">Customize Yours</button>
-                                </div>
+                            <div className="z-0 w-[480px] max-lg:hidden">
+                                <img
+                                    src="/home/biggirl.png"
+                                    alt="Woman Holding Phone"
+                                    className="rounded-full w-full object-cover"
+                                />
                             </div>
                         </div>
-                    </div>
-
-                    <div className='lg:hidden my-4'>
-                        <div className='flex justify-around' style={{ columnGap: '2rem' }}>
-                            <li className="flex items-center gap-2 text-white text-[clamp(0.9rem,1vw,50rem)]">
-                                <span className="w-2 h-2 rounded-full bg-white"></span> Upload an Image
-                            </li>
-                            <li className="flex items-center gap-2 text-white text-[clamp(0.9rem,1vw,50rem)]">
-                                <span className="w-2 h-2 rounded-full bg-white"></span> Private Customization
-                            </li>
-                        </div>
-
-                        <div className='flex justify-around' style={{ columnGap: '2rem' }}>
-                            <li className="flex items-center gap-2 text-white text-[clamp(0.9rem,1vw,50rem)]">
-                                <span className="w-2 h-2 rounded-full bg-white"></span> Customized Gifting
-                            </li>
-                            <li className="flex items-center gap-2 text-white text-[clamp(0.9rem,1vw,50rem)]">
-                                <span className="w-2 h-2 rounded-full bg-white"></span> Bulk Corporate Gifting
-                            </li>
-                        </div>
-                    </div>
-
-                    <div className="my-6">
-                        <p className="text-center mb-3 text-white">Do you have a cretive design idea? Share with Us! We Will Make it for you!</p>
-                        <div className="flex gap-2 items-center bg-white rounded-full h-fit ">
-                            <input
-                                type="text"
-                                placeholder="Write Down You Idea Here!"
-                                className="flex-1 rounded-full px-4 py-2 text-sm bg-white"
-                            />
-                            <button className="bg-black text-white rounded-full py-2 px-5 my-1 mx-1 text-sm">Submit Idea</button>
-                        </div>
-                    </div>
+                    </section>
 
 
-                    <div className='flex flex-col justify-center items-center'>
-                        <IoIosArrowDown className='text-black shadow-2xl w-fit h-fit bg-gray-100 rounded-full text-xl' />
-                        <div className="space-y-6 flex-[1] max-h-80 overflow-auto scrollbar-hide max-lg:w-full">
-                            {ideas.map((item, idx) => (
-                                <div key={item.id} className="flex flex-col lg:flex-row items-start lg:items-center flex-wrap gap-4 border-b-2 p-5 bg-black text-white">
-                                    <div className='flex flex-wrap items-center gap-4'>
-                                        <div className="w-3 h-3 bg-white rounded-full mt-1"></div>
-                                        <div className="h-10 w-10 rounded-full bg-white" />
-                                        <h4 className="font-semibold">{item.name}</h4>
+                    <section className="bg-black text-white py-10">
+                        <div className="w-[95%] xl:w-[90%] mx-auto flex flex-col lg:flex-row items-center justify-center relative max-w-[1400px] max-xl:max-w-2xl">
+                            <div className=" z-0 w-[700px] max-lg:hidden">
+                                <img
+                                    src="/home/bigwall.png"
+                                    alt="Woman Holding Phone"
+                                    className="rounded-full w-full object-cover"
+                                />
+                            </div>
+                            <div className="bg-white text-black rounded-4xl px-6 max-md:px-2 py-8 w-[60%] -ml-72 mb-10 max-lg:w-full  max-lg:-ml-0">
+
+                                <h3 className="text-center text-sm mb-1 font-light">A Premium Experience In Every Detail</h3>
+                                <h2 className="text-center text-[clamp(1rem,1.5vw,50rem)] font-bold my-4">
+                                    <span className="bg-black text-white px-4 py-1 rounded-full">Our Best Selling Phone Cases</span>
+                                </h2>
+                                <div className='flex items-center justify-between gap-2 max-w-[400px] mx-auto'>
+                                    <button className=" bg-black text-white p-2 rounded-full z-20 h-fit">
+                                        <FaChevronLeft />
+                                    </button>
+                                    <div className="flex justify-start overflow-auto  scrollbar-hide gap-5">
+                                        {products.map((product, index) => (
+                                            <div key={index} className="text-center flex-shrink-0">
+                                                <img src={product.image} alt={product.name} className="max-w-40 w-full h-64 object-contain mx-auto" />
+                                                <h3 className="mt-3 font-semibold">{product.name}</h3>
+                                                <div className="flex justify-center text-yellow-500 my-1">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <FaStar key={i} className="text-sm" />
+                                                    ))}
+                                                </div>
+                                                <div className="bg-black text-white px-3 py-1 rounded-full inline-block mt-1">
+                                                    Price: {product.price}
+                                                </div>
+                                                <div>
+                                                    <button className="underline text-sm mt-2">More Details</button>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
-                                    <div className="flex-1">
-                                        <p className="text-sm line-clamp-2">
-                                            {item.text}...<span className="underline px-2">See More</span>
-                                        </p>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <button className="text-white">See Design</button>
-                                        <span className="text-2xl">🤍</span>
-                                    </div>
+                                    <button className="bg-black text-white p-2 rounded-full z-20 h-fit">
+                                        <FaChevronRight />
+                                    </button>
                                 </div>
-                            ))}
+                                <div className="text-center mt-6">
+                                    <button className="underline font-medium">View All Phone Cases</button>
+                                </div>
+                            </div>
                         </div>
-                        <IoIosArrowUp className='text-black shadow-2xl w-fit h-fit bg-gray-100 rounded-full text-xl' />
-                    </div>
-                </div>
-                <div className='border-l-4 border-white h-100vh rounded-full max-lg:hidden'></div>
-
-                {/* Right Cards */}
-                <div className="w-full lg:w-1/5 flex flex-col gap-6 self-center max-lg:hidden">
-                    <div className='flex flex-col items-start'>
-                        <h3 className="text-white text-lg font-semibold mb-2">Phone Case</h3>
-                        <div className="bg-white h-44 rounded-md mb-2 w-40 p-2 flex flex-col">
-                            <button className="w-full bg-black text-white py-2 rounded-full mt-auto">Customize Yours</button>
-                        </div>
-                    </div>
-                    <div className='flex flex-col items-start'>
-                        <h3 className="text-white text-lg font-semibold mb-2">Wall Art</h3>
-                        <div className="bg-white h-44 rounded-md mb-2 w-40 p-2 flex flex-col">
-                            <button className="w-full bg-black text-white py-2 rounded-full mt-auto">Customize Yours</button>
-                        </div>
-                    </div>
+                    </section>
                 </div>
             </div>
-
-            <section className=" text-white py-10">
-                <div className="w-[95%] xl:w-[90%] mx-auto flex flex-col lg:flex-row items-center justify-center relative max-w-[1400px] max-xl:max-w-2xl">
-
-                    <div className="bg-white text-black rounded-4xl px-6 max-md:px-2 py-8 w-[60%] -mr-56 mb-10 max-lg:w-full  max-lg:-mr-0">
-
-                        <h3 className="text-center text-sm mb-1 font-light">A Premium Experience In Every Detail</h3>
-                        <h2 className="text-center text-[clamp(1rem,1.5vw,50rem)] font-bold my-4">
-                            <span className="bg-black text-white px-4 py-1 rounded-full">Our Best Selling Phone Cases</span>
-                        </h2>
-                        <div className='flex items-center justify-between gap-2'>
-                            <button className=" bg-black text-white p-2 rounded-full z-20 h-fit">
-                                <FaChevronLeft />
-                            </button>
-                            <div className="flex justify-start gap-5 overflow-auto  max-lg:w-[95%] scrollbar-hide">
-                                {products.map((product, index) => (
-                                    <div key={index} className="text-center flex-shrink-0">
-                                        <img src={product.image} alt={product.name} className="max-w-40 w-full h-64 object-contain mx-auto" />
-                                        <h3 className="mt-3 font-semibold">{product.name}</h3>
-                                        <div className="flex justify-center text-yellow-500 my-1">
-                                            {[...Array(5)].map((_, i) => (
-                                                <FaStar key={i} className="text-sm" />
-                                            ))}
-                                        </div>
-                                        <div className="bg-black text-white px-3 py-1 rounded-full inline-block mt-1">
-                                            Price: {product.price}
-                                        </div>
-                                        <div>
-                                            <button className="underline text-sm mt-2">More Details</button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <button className="bg-black text-white p-2 rounded-full z-20 h-fit">
-                                <FaChevronRight />
-                            </button>
-                        </div>
-                        <div className="text-center mt-6">
-                            <button className="underline font-medium">View All Phone Cases</button>
-                        </div>
-                    </div>
-
-                    <div className="z-0 w-[480px] max-lg:hidden">
-                        <img
-                            src="/home/biggirl.png"
-                            alt="Woman Holding Phone"
-                            className="rounded-full w-full object-cover"
-                        />
-                    </div>
-                </div>
-            </section>
-
-
-            <section className="bg-black text-white py-10">
-                <div className="w-[95%] xl:w-[90%] mx-auto flex flex-col lg:flex-row items-center justify-center relative max-w-[1400px] max-xl:max-w-2xl">
-                    <div className=" z-0 w-[700px] max-lg:hidden">
-                        <img
-                            src="/home/bigwall.png"
-                            alt="Woman Holding Phone"
-                            className="rounded-full w-full object-cover"
-                        />
-                    </div>
-                    <div className="bg-white text-black rounded-4xl px-6 max-md:px-2 py-8 w-[60%] -ml-72 mb-10 max-lg:w-full  max-lg:-ml-0">
-
-                        <h3 className="text-center text-sm mb-1 font-light">A Premium Experience In Every Detail</h3>
-                        <h2 className="text-center text-[clamp(1rem,1.5vw,50rem)] font-bold my-4">
-                            <span className="bg-black text-white px-4 py-1 rounded-full">Our Best Selling Phone Cases</span>
-                        </h2>
-                        <div className='flex items-center justify-between gap-2'>
-                            <button className=" bg-black text-white p-2 rounded-full z-20 h-fit">
-                                <FaChevronLeft />
-                            </button>
-                            <div className="flex justify-start overflow-auto  scrollbar-hide gap-5">
-                                {products.map((product, index) => (
-                                    <div key={index} className="text-center flex-shrink-0">
-                                        <img src={product.image} alt={product.name} className="max-w-40 w-full h-64 object-contain mx-auto" />
-                                        <h3 className="mt-3 font-semibold">{product.name}</h3>
-                                        <div className="flex justify-center text-yellow-500 my-1">
-                                            {[...Array(5)].map((_, i) => (
-                                                <FaStar key={i} className="text-sm" />
-                                            ))}
-                                        </div>
-                                        <div className="bg-black text-white px-3 py-1 rounded-full inline-block mt-1">
-                                            Price: {product.price}
-                                        </div>
-                                        <div>
-                                            <button className="underline text-sm mt-2">More Details</button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <button className="bg-black text-white p-2 rounded-full z-20 h-fit">
-                                <FaChevronRight />
-                            </button>
-                        </div>
-                        <div className="text-center mt-6">
-                            <button className="underline font-medium">View All Phone Cases</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
 
             {/* free shipping  */}
             <section>
@@ -728,7 +755,7 @@ const Home = () => {
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className='lg:w-1/2 w-full flex flex-col border border-white rounded-4xl p-4'>
                         <div className="mt-6">
                             <h2 className="text-3xl font-semibold mb-2 text-center">Have a <br />  <span className='text-6xl font-semibold'>Question?</span></h2>
