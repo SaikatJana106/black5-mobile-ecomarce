@@ -82,6 +82,46 @@ const ProductPage = () => {
 
   // arrow scroll logic 
 
+  //================================== api call ====================================
+  const addtocart = async () => {
+    try {
+      const token = localStorage.getItem("black5authtoken");
+      if (!token) {
+        window.location.href = "/login"; // or use navigate("/login") if inside a React component
+        return;
+      }
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/add-to-cart`,
+        {
+          product_id: 1,
+          quantity: 1,
+          variation_id: 4
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+
+        }
+      );
+
+      const data = response.data; // axios automatically parses JSON
+
+      if (data.success) {
+        alert("cart add sucess successful");
+        setFormState("login");
+      } else {
+        alert(data.message || "Signup failed");
+      }
+    } catch (error) {
+      console.error("Error :", error);
+      alert("An error occurred . Please try again.");
+    }
+  };
+
+  //================================== api call ====================================
+
   return (
     <div className='relative z-50'>
 
@@ -172,7 +212,7 @@ const ProductPage = () => {
               </div>
               <div className='bg-black px-4 py-1  rounded-lg hover:bg-gray-800 flex flex-col justify-center items-center'>
                 <RiShoppingBag3Fill className='text-xl' color='white' />
-                <button className=" text-white ">
+                <button onClick={addtocart} className=" text-white ">
                   Add to Bag
                 </button>
               </div>

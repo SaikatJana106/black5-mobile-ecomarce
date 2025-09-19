@@ -90,7 +90,7 @@ const Phonecase = () => {
 
         // only home + root categories
         const filtered = await res.data.data.categories.data.find(
-          (c) => c.is_home === 1 && c.parent_id === null &&  c.slug === "phone-case"
+          (c) => c.is_home === 1 && c.parent_id === null && c.slug === "phone-case"
         );
         console.log(filtered);
         setCategories(filtered);
@@ -107,28 +107,93 @@ const Phonecase = () => {
   // ==================product api call====================
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [BestSellers, setBestSellers] = useState([]);
+  // useEffect(() => {
+
+
+  //   const fetchProducts = async (page = 1) => {
+  //     try {
+  //       setLoading(true);
+  //       const res = await axios.get(
+  //         `${import.meta.env.VITE_API_URL}/products`
+  //       );
+
+  //       const productData = res.data.data.products.data.filter(
+  //         (productfilter) => productfilter.stock>0 && productfilter.is_visible===1
+  //       );
+  //       setProducts(productData); // products array
+  //     } catch (err) {
+  //       console.error("Error fetching products:", err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchProducts();
+  // }, []);
   useEffect(() => {
-
-
-    const fetchProducts = async (page = 1) => {
+    const fetchProducts = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(
-          `https://black5creations.orbitalwebworks.com/api/products`
-        );
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/products`);
 
-        const productData = res.data.data.products.data.filter(
-          (productfilter) => productfilter.stock>0 && productfilter.is_visible===1
-        );
-        setProducts(productData); // products array
+        const allProducts = res.data.data.products.data;
+
+        // Step 1: Normal product transform
+        const productData = allProducts
+          .filter((p) => p.is_visible === 1)
+          .flatMap((product) => {
+            if (!product.variations || product.variations.length === 0) {
+              return [{
+                id: product.id,
+                name: product.name,
+                price: product.total_price,
+                stock: product.stock,
+                image: product.media?.[0]?.original_url || "/4productpage/1img.png",
+              }];
+            }
+
+            return product.variations.flatMap((variation) =>
+              variation.options.map((opt) => ({
+                id: `${product.id}-${opt.id}`,
+                name: product.name,
+                type: opt.variation_name,
+                price: opt.price,
+                stock: opt.stock,
+                image: product.media?.[0]?.original_url || "/4productpage/1img.png",
+              }))
+            );
+          });
+
+        setProducts(productData);
+
+        // Step 2: Best sellers (example logic)
+        // If API gives a "is_best_seller" field
+        const bestSellers = allProducts
+          .filter((p) => p.is_best_selling === 1) // adjust field name to match your API
+          .map((p) => ({
+            id: p.id,
+            name: p.name,
+            price: p.total_price,
+            image: p.media?.[0]?.original_url || "/4productpage/1img.png",
+          }));
+
+        setBestSellers(bestSellers);
+
+        // OR if "best seller" just means top N expensive/popular products
+        // const bestSellers = [...productData].sort((a, b) => b.price - a.price).slice(0, 5);
+        // setBestSellers(bestSellers);
+
       } catch (err) {
         console.error("Error fetching products:", err);
       } finally {
         setLoading(false);
       }
     };
+
     fetchProducts();
   }, []);
+
+
   // ==================product api call====================
 
   //====================== brands api call ====================
@@ -260,7 +325,7 @@ const Phonecase = () => {
         <div className="flex items-center justify-center gap-2 mb-6 w-[75%] max-xl:w-[95%] max-w-[1400px] mx-auto">
           <button onClick={() => scroll("left")} className="text-2xl text-white hover:text-gray-300">&#10094;</button>
           <div ref={PhoneProductscrollRef} className="flex overflow-hidden gap-6 scrollbar-hide px-4">
-            {phoneCases.map((item) => (
+            {BestSellers.map((item) => (
               <div
                 key={item.id}
                 className="min-w-[300px] max-w-[300px] flex-shrink-0 text-center relative"
@@ -268,7 +333,7 @@ const Phonecase = () => {
                 <img loading='lazy'
                   src={item.image}
                   alt={item.name}
-                  className="w-full h-auto rounded-lg shadow-md "
+                  className="w-full h-auto rounded-lg shadow-md object-cover"
                 />
                 <div className='absolute top-2 left-[5%] '>
                   <h3 className="mt-2 text-sm font-semibold">{item.name}</h3>
@@ -442,17 +507,18 @@ const Phonecase = () => {
                   .map((item) => (
                     <div key={item.id} className="flex flex-col items-center text-center space-y-1">
                       <Link to={`/phone-case-product/${item.id}`}>
-                      <img
-                        src={item.image_link ? item.image_link : "/4productpage/1img.png"}
-                        alt={item.name}
-                        className="h-fit w-fit object-cover rounded-md max-h-60"
-                      />
+                        <img
+                          src={item.image ? item.image : "/4productpage/1img.png"}
+                          alt={item.name}
+                          className="h-fit w-fit object-cover rounded-md max-h-60"
+                        />
                       </Link>
                       <Link to={`/phone-case-product/${item.id}`} className="text-xs font-medium hover:underline">{item.name}</Link >
+                      <Link to={`/phone-case-product/${item.id}`} className="text-xs font-medium hover:underline">{item.type}</Link >
                       <div className="text-yellow-500 text-sm">
                         {"★".repeat(4)}{"☆".repeat(1)}
                       </div>
-                      <p className="text-sm font-semibold">Price: ₹{item.total_price}</p>
+                      <p className="text-sm font-semibold">Price: ₹{item.price}</p>
                     </div>
                   ))}
               </div>

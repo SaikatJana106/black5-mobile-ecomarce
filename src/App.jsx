@@ -11,6 +11,10 @@ import Customise from './pages/Customise';
 import CardCongrats from './pages/CardCongrats';
 import Login from './pages/Login';
 import ContactUs from './pages/ContactUs';
+import GoogleAuthHandler from './auth/GoogleAuthHandler';
+import Dashboard from './pages/Dashboard';
+import CartItemDisplay from './pages/CartItemDisplay';
+import Checkout from './pages/Checkout';
 // import other pages if needed
 // import Home from './pages/Home';
 // import About from './pages/About';
@@ -38,6 +42,10 @@ function App() {
           <Route path="/congratulation" element={<CardCongrats/>} />  
           <Route path="/login" element={<Login/>} />     
           <Route path="/contact-us" element={<ContactUs/>} />     
+          <Route path="/google-auth-handler" element={<GoogleAuthHandler/>} />  
+          <Route path="/dashboard" element={<Dashboard/>} />  
+          <Route path="/cart" element={<CartItemDisplay/>} />  
+          <Route path="/checkout" element={<Checkout/>} />     
           {/* Add other routes as needed */}
           {/* <Route path="/about" element={<About />} /> */}
         </Routes>
