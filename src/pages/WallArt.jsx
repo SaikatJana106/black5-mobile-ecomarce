@@ -80,7 +80,7 @@ const WallArt = () => {
             {/* ✅ Hero Section with Background */}
             <section className="relative h-screen w-full">
                 <img
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="absolute inset-0 w-full h-full"
                     src="/wallart/banner.png"
                     alt="Banner"
                 />

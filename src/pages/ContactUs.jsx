@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-
+import { Link } from 'react-router-dom'
+import { FaPhoneAlt, FaUser } from "react-icons/fa";
+import { MdEmail, MdMessage, MdSubject } from "react-icons/md";
 export default function ContactUs() {
     const [formData, setFormData] = useState({
         name: "",
@@ -36,12 +38,12 @@ export default function ContactUs() {
             );
 
             if (!response.ok) {
-                
-                    const errorData = await response.json();
-                    console.error("Validation errors:", errorData);
-                    setErrors(errorData.data?.errors || {});
-                    alert("Insert Correct Data");
-               
+
+                const errorData = await response.json();
+                console.error("Validation errors:", errorData);
+                setErrors(errorData.data?.errors || {});
+                alert("Insert Correct Data");
+
                 return;
             }
 
@@ -76,7 +78,7 @@ export default function ContactUs() {
                 {/* Form Fields */}
                 <form onSubmit={handleSubmit} className="mt-6 w-full max-w-96 space-y-3">
                     <div className="flex items-center border border-gray-400 rounded-full px-3 py-2">
-                        <span className="material-icons">person</span>
+                        <FaUser className="text-white" />
                         <input
                             type="text"
                             name="name"
@@ -88,7 +90,7 @@ export default function ContactUs() {
                     </div>
 
                     <div className="flex items-center border border-gray-400 rounded-full px-3 py-2">
-                        <span className="material-icons">email</span>
+                        <MdEmail className="text-white" />
                         <input
                             type="email"
                             name="email"
@@ -102,7 +104,7 @@ export default function ContactUs() {
 
                     <div>
                         <div className="flex items-center border border-gray-400 rounded-full px-3 py-2">
-                            <span className="material-icons">phone</span>
+                            <FaPhoneAlt className="text-white" />
                             <input
                                 type="text"
                                 name="phone"
@@ -120,7 +122,7 @@ export default function ContactUs() {
                     {/* Subject */}
                     <div>
                         <div className="flex items-center border border-gray-400 rounded-full px-3 py-2">
-                            <span className="material-icons">subject</span>
+                            <MdSubject className="text-white" />
                             <input
                                 type="text"
                                 name="subject"
@@ -137,7 +139,7 @@ export default function ContactUs() {
 
                     <div>
                         <div className="flex items-start border border-gray-400 rounded-2xl px-3 py-2">
-                            <span className="material-icons">message</span>
+                            <MdMessage className="text-white"/>
                             <textarea
                                 name="message"
                                 placeholder="Your Message"

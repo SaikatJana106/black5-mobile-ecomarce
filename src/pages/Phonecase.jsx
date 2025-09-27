@@ -3,7 +3,7 @@ import phoneCases from "../json/phonecase.json"
 import phones from "../json/phone.json"
 import data from '../json/phonecasefiter.json'
 import cases from '../json/cases.json'
-import { FaChevronLeft, FaChevronRight, FaStar } from 'react-icons/fa';
+import { FaArrowLeft, FaArrowRight, FaChevronLeft, FaChevronRight, FaStar } from 'react-icons/fa';
 import { CiSearch } from "react-icons/ci";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import phonecasefilterdata from '../json/phonecasefilterdata.json';
@@ -82,18 +82,18 @@ const Phonecase = () => {
 
   //======================= category api call =================
   const [categories, setCategories] = useState([]);
+  const [categoryActiveSlug, setCategoryActiveSlug] = useState("phone-case"); // default active
+  const [categoryType, setCategoryType] = useState([]);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("https://black5creations.orbitalwebworks.com/api/categories");
-
-        // only home + root categories
-        const filtered = await res.data.data.categories.data.find(
-          (c) => c.is_home === 1 && c.parent_id === null && c.slug === "phone-case"
-        );
-        console.log(filtered);
-        setCategories(filtered);
+        const res = await axios.get("https://admin.black5creatives.in/api/categories");
+        // Extract categories from response
+        const cattype = res.data.data.categories.data;
+        setCategories(cattype);
+        setCategoryType(cattype); // if you want to use categoryType separately
+        console.log("Fetched categories:", cattype);
       } catch (err) {
         console.error("Error fetching categories:", err);
       }
@@ -102,99 +102,55 @@ const Phonecase = () => {
     fetchCategories();
   }, []);
 
+  // get selected category
+
+  const selected = categories.find((c) => c.slug === categoryActiveSlug);
+
   // =================category api call ===========================
 
   // ==================product api call====================
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [BestSellers, setBestSellers] = useState([]);
-  // useEffect(() => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
 
+  const fetchProducts = async (page = 1) => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/products?page=${page}`
+      );
 
-  //   const fetchProducts = async (page = 1) => {
-  //     try {
-  //       setLoading(true);
-  //       const res = await axios.get(
-  //         `${import.meta.env.VITE_API_URL}/products`
-  //       );
+      const productData = res.data.data.products.data.filter(
+        (p) => p.is_visible === 1
+      );
+      setProducts(productData);
 
-  //       const productData = res.data.data.products.data.filter(
-  //         (productfilter) => productfilter.stock>0 && productfilter.is_visible===1
-  //       );
-  //       setProducts(productData); // products array
-  //     } catch (err) {
-  //       console.error("Error fetching products:", err);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchProducts();
-  // }, []);
+      // Set the last page from response
+      setLastPage(res.data.data.products.last_page);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+    } finally {
+    }
+  };
+
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/products`);
+    fetchProducts(currentPage);
+  }, [currentPage]);
 
-        const allProducts = res.data.data.products.data;
+  const handlePrev = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
 
-        // Step 1: Normal product transform
-        const productData = allProducts
-          .filter((p) => p.is_visible === 1)
-          .flatMap((product) => {
-            if (!product.variations || product.variations.length === 0) {
-              return [{
-                id: product.id,
-                name: product.name,
-                price: product.total_price,
-                stock: product.stock,
-                image: product.media?.[0]?.original_url || "/4productpage/1img.png",
-              }];
-            }
-
-            return product.variations.flatMap((variation) =>
-              variation.options.map((opt) => ({
-                id: `${product.id}-${opt.id}`,
-                name: product.name,
-                type: opt.variation_name,
-                price: opt.price,
-                stock: opt.stock,
-                image: product.media?.[0]?.original_url || "/4productpage/1img.png",
-              }))
-            );
-          });
-
-        setProducts(productData);
-
-        // Step 2: Best sellers (example logic)
-        // If API gives a "is_best_seller" field
-        const bestSellers = allProducts
-          .filter((p) => p.is_best_selling === 1) // adjust field name to match your API
-          .map((p) => ({
-            id: p.id,
-            name: p.name,
-            price: p.total_price,
-            image: p.media?.[0]?.original_url || "/4productpage/1img.png",
-          }));
-
-        setBestSellers(bestSellers);
-
-        // OR if "best seller" just means top N expensive/popular products
-        // const bestSellers = [...productData].sort((a, b) => b.price - a.price).slice(0, 5);
-        // setBestSellers(bestSellers);
-
-      } catch (err) {
-        console.error("Error fetching products:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
-
+  const handleNext = () => {
+    if (currentPage < lastPage) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
 
   // ==================product api call====================
+  // best seller api call 
+  const [BestSellers, setBestSellers] = useState([]);
 
   //====================== brands api call ====================
   const [brands, setBrands] = useState([]);
@@ -219,7 +175,7 @@ const Phonecase = () => {
       {/* ✅ Hero Section with Background */}
       <div className="relative h-screen w-full">
         <img
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full"
           src="/2phonecover/banner.png"
           alt="Banner"
         />
@@ -379,13 +335,17 @@ const Phonecase = () => {
             ref={categoryscrollRef}
             className="flex gap-5 overflow-x-hidden scrollbar-hide scroll-smooth px-8"
           >
-            {categories && categories.children?.length > 0 ? (
-              categories.children.map((child) => (
+            {selected && selected.children?.length > 0 ? (
+              selected.children.map((child) => (
                 <div
                   key={child.id}
-                  className="min-w-[15rem] bg-cover bg-center rounded-t-full h-[24rem] flex flex-col justify-end items-center"
-                  style={{ backgroundImage: "url('/w2.png')" }}
+                  className="min-w-[15rem] bg-cover bg-center rounded-t-full h-[25rem] flex flex-col justify-end items-center"
                 >
+                  <img
+                    src={child.image_link}
+                    alt={child.name}
+                    className="w-full h-full"
+                  />
                   <div className="bg-white w-full text-center py-2 rounded-b-md">
                     <button className="text-black font-medium text-xl">
                       {child.name}
@@ -415,9 +375,9 @@ const Phonecase = () => {
 
 
       {/* ================================last section ============================================= */}
-      <div ref={filtersectionRef} className="flex bg-white text-black p-15 max-lg:p-6 rounded-3xl shadow-lg gap-6 min-h-screen w-[85%] max-lg:w-[95%] mx-auto mb-5 max-w-[1400px]">
+      <div ref={filtersectionRef} className=" bg-white text-black p-15 max-lg:p-6 rounded-3xl shadow-lg gap-6 min-h-screen w-[85%] max-lg:w-[95%] mx-auto mb-5 max-w-[1400px]">
         {/* Filter Sidebar */}
-        <div className="lg:w-1/4 space-y-6 border-r pr-4 max-lg:hidden">
+        {/* <div className="lg:w-1/4 space-y-6 border-r pr-4 max-lg:hidden">
           {phonecasefilterdata.filters.map((filterSection, index) => (
             <div key={index}>
               <h2 className="font-semibold mb-2">{filterSection.title}</h2>
@@ -429,13 +389,10 @@ const Phonecase = () => {
               {index < phonecasefilterdata.filters.length - 1 && <hr className='bg-gray-400 mt-5' />}
             </div>
           ))}
-        </div>
-
-
-
+        </div> */}
 
         {/* Mobile Filter Offcanvas */}
-        <div
+        {/* <div
           id="mobile-filter"
           className="hidden fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
           onClick={() => document.getElementById('mobile-filter').classList.add('hidden')}
@@ -470,10 +427,10 @@ const Phonecase = () => {
               ))}
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Mobile Filter Button */}
-        {isFilterSectionVisible && (
+        {/* {isFilterSectionVisible && (
           <div className="lg:hidden fixed bottom-5 right-5 z-10">
             <button
               className="bg-black text-white p-3 rounded-full shadow-lg"
@@ -484,15 +441,12 @@ const Phonecase = () => {
               </svg>
             </button>
           </div>
-        )}
-
-
-
+        )} */}
 
         {/* Product Grid */}
 
         {/* Product Grid */}
-        <div className="lg:w-3/4 w-full space-y-10">
+        {/* <div className="lg:w-3/4 w-full space-y-10">
           {[...new Set(products.map((p) => p.name))].map((name) => (
             <div>
               <h3 className=" text-white bg-black font-semibold text-center w-max mx-auto px-4 py-1 text-lg rounded-full mb-1">
@@ -524,7 +478,45 @@ const Phonecase = () => {
               </div>
             </div>
           ))}
+        </div> */}
+
+        <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 justify-between gap-5 h-fit w-full min-h-screen'>
+          {products.map((item) => (
+            <div key={item.id} className="flex flex-col items-center text-center space-y-1">
+              <Link to={`/phone-case-product/${item.id}`}>
+                <img
+                  src={item.image_link ? item.image_link : "/4productpage/1img.png"}
+                  alt={item.name}
+                  className="h-fit w-fit object-cover rounded-md max-h-60"
+                  loading='lazy'
+                />
+              </Link>
+              <Link to={`/phone-case-product/${item.id}`} className="text-xs font-medium hover:underline">{item.name}</Link >
+              <Link to={`/phone-case-product/${item.id}`} className="text-xs font-medium hover:underline">{item.type}</Link >
+              <div className="text-yellow-500 text-sm">
+                {"★".repeat(4)}{"☆".repeat(1)}
+              </div>
+              <p className="text-sm font-semibold">Price: ₹{item.product_price}</p>
+            </div>
+          ))}
         </div>
+        <div className="flex gap-5 w-full justify-end items-end  mt-5" >
+          <button
+            onClick={handlePrev}
+            disabled={currentPage === 1}
+            className="px-6 py-2 bg-black text-white font-medium rounded-full shadow-sm hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Prev
+          </button>
+          <button
+            onClick={handleNext}
+            disabled={currentPage === lastPage}
+            className="px-6 py-2 bg-black text-white font-medium rounded-full shadow-md hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Next
+          </button>
+        </div>
+
       </div>
     </div>
   );

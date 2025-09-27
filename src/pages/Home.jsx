@@ -5,6 +5,8 @@ import statueImage from '/w1.png';
 import phoneCases from '../json/phonecasefiter.json'
 import { FaInstagram, FaFacebookF, FaWhatsapp, FaPaperPlane, FaPhoneAlt, FaEnvelope, FaSearch } from 'react-icons/fa';
 import { HiOutlineLightBulb } from "react-icons/hi";
+import { Link, useNavigate } from 'react-router-dom'
+
 // import phone1 from '../assets/phone1.png';
 // import phone2 from '../assets/phone2.png';
 import phone3 from '/2phonecover/1.png';
@@ -14,7 +16,13 @@ import { FaChevronLeft, FaChevronRight, FaStar } from "react-icons/fa";
 import { CiSearch } from 'react-icons/ci';
 import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from "react-icons/md";
 import axios from 'axios';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 const Home = () => {
+    useEffect(() => {
+        AOS.init({ duration: 2000 });
+    }, []);
+
     const reviews = Array(8).fill({
         title: 'Best Artistic Designs',
         text: 'The Bes gvedgf gogr gvdgf pgvn grdt Phone Cases for high fitting high grip!',
@@ -64,17 +72,18 @@ const Home = () => {
 
     //======================= category api call =================
     const [categories, setCategories] = useState([]);
-    const [categoryActiveSlug, setcategoryActiveSlug] = useState("phone-case"); // default
+    const [categoryActiveSlug, setCategoryActiveSlug] = useState("phone-case"); // default active
+    const [categoryType, setCategoryType] = useState([]);
 
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const res = await axios.get("https://black5creations.orbitalwebworks.com/api/categories");
-                // only home + root categories
-                const filtered = await res.data.data.categories.data.filter(
-                    (c) => c.is_home === 1 && c.parent_id === null
-                );
-                setCategories(filtered);
+                const res = await axios.get("https://admin.black5creatives.in/api/categories");
+                // Extract categories from response
+                const cattype = res.data.data.categories.data;
+                setCategories(cattype);
+                setCategoryType(cattype); // if you want to use categoryType separately
+                console.log("Fetched categories:", cattype);
             } catch (err) {
                 console.error("Error fetching categories:", err);
             }
@@ -84,7 +93,9 @@ const Home = () => {
     }, []);
 
     // get selected category
+
     const selected = categories.find((c) => c.slug === categoryActiveSlug);
+
     // =================category api call ===========================
 
 
@@ -116,9 +127,12 @@ const Home = () => {
     }, []);
     // ==================product api call====================
 
+    // video play logic
+    const [selectedVideo, setSelectedVideo] = useState("phone");
+
     return (
         <div>
-            <section className="w-[95%] lg:w-[75%] xl:w-[65%] mx-auto py-5 md:py-10 flex max-[780px]:flex-col flex-row justify-between gap-6 text-white font-sans max-[780px]:max-w-md">
+            <section className="w-[95%] lg:w-[75%] xl:w-[65%] max-w-[1400px] mx-auto py-5 mt-5 flex max-[780px]:flex-col flex-row justify-between gap-6 text-white font-sans max-[780px]:max-w-md h-[90vh] max-h-[600px] min-h-fit">
                 {/* Left Column w-[95%] xl:w-[80%]*/}
                 <div className="max-[780px]:w-full w-[48%] flex flex-col gap-4 md:gap-6">
                     {/* Welcome Section */}
@@ -127,10 +141,6 @@ const Home = () => {
                             <h2 className="text-[clamp(1rem,1.5vw,3rem)] font-medium mb-1">Hey! Welcome to</h2>
                             <h1 className="text-[clamp(1rem,1.9vw,3rem)] font-bold mb-1">Black5 Creatives</h1>
                             <p className="text-[clamp(0.8rem,1vw,3rem)] mb-3">We Sell Creative Premium</p>
-                            {/* <div className="space-y-2">
-                                <button className="border border-black px-4 py-1 rounded-full text-xs hover:bg-black hover:text-white transition">● Phone Cases</button>
-                                <button className="border border-black px-4 py-1 rounded-full text-xs hover:bg-black hover:text-white transition">● Wall arts</button>
-                            </div> */}
                             <ul className=' list-disc marker:text-black text-lg list-outside flex flex-col w-fit gap-1 '>
                                 <li className="px-2 py-1 bg-black rounded-full text-xs text-white text-center">Phone Cases</li>
                                 <li className="px-2 py-1 bg-black rounded-full text-xs text-white text-center">Wall arts</li>
@@ -141,64 +151,85 @@ const Home = () => {
 
                     {/* Two Product Cards */}
                     <div className="flex justify-between gap-4">
-                        <div className="bg-white w-1/2 rounded-3xl p-2 flex flex-col items-center overflow-hidden">
+                        <div className="bg-white w-1/2 rounded-4xl p-2 flex flex-col items-center overflow-hidden ">
                             <p className="text-black text-sm mb-2 underline font-semibold">Phone Case</p>
                             <div className='bg-[#eeeeee] rounded-4xl p-4 flex flex-col justify-center items-center w-full'>
-                                <div className=" rounded-xl bg-[url('/home/design.png')] bg-cover bg-center h-40 w-40 flex justify-center items-center">
-                                    <img className="h-40 rounded-xl" src="/4productpage/2img.png" alt="Phone Case" />
+                                <div className=" rounded-xl bg-[url('/home/design.png')] bg-cover bg-center max-h-64 h-[34vh] w-40 min-h-fit flex justify-center items-center">
+                                    <img className="max-h-64 h-[34vh] rounded-xl" src="/4productpage/2img.png" alt="Phone Case" />
                                 </div>
 
-                                <button className="mt-2 px-3 py-1 text-xs bg-black text-white rounded-full">Shop Now</button>
+
+                                <Link to="/phonecase" className="mt-2 px-3 py-1 text-xs bg-black text-white rounded-full">Shop Now</Link>
                             </div>
                         </div>
-                        <div className="bg-white w-1/2 rounded-3xl p-2 flex flex-col items-center overflow-hidden">
+                        <div className="bg-white w-1/2 rounded-4xl p-2 flex flex-col items-center overflow-hidden">
                             <p className="text-black text-sm mb-2 underline font-semibold">Wall art</p>
                             <div className='bg-[#eeeeee] rounded-4xl p-4 flex flex-col justify-center items-center w-full'>
-                                <div className=" rounded-xl bg-[url('/home/design.png')] bg-cover bg-center h-40 w-32 flex justify-center items-center">
-                                    <img className="h-24 rounded-xl" src="/5wallartproduct/persion.png" alt="Wall Art" />
+                                <div className=" rounded-xl bg-[url('/home/design.png')] bg-cover bg-center max-h-64 h-[34vh] w-32 flex justify-center items-center">
+                                    <img className="max-h-32 h-[34vh] rounded-xl" src="/5wallartproduct/persion.png" alt="Wall Art" />
+                                    {/* <video className="h-64 rounded-xl" autoPlay src="/home/wallart.mp4"></video> */}
                                 </div>
-                                <button className="mt-2 px-3 py-1 text-xs bg-black text-white rounded-full">Shop Now</button>
+                                <Link to="/phonecase" className="mt-2 px-3 py-1 text-xs bg-black text-white rounded-full">Shop Now</Link>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Right Column */}
-                <div className="max-[780px]:w-full w-[48%] bg-[url('/home/homebg.png')] bg-cover bg-center rounded-3xl relative overflow-hidden flex flex-col justify-center p-4 mt-4 lg:mt-0">
-                    <div className='flex items-center justify-center'>
-                        <img src="/home/phone.png" alt="Main Phone Case" className="h-[25rem] mx-auto drop-shadow-2xl object-cover object-center" />
+                <div className="max-[780px]:w-full w-[48%] bg-[url('/home/homebg.png')] bg-cover bg-center rounded-4xl relative overflow-hidden flex flex-col justify-center lg:mt-0 h-[82vh] max-h-[600px] min-h-fit">
+                    <div className='flex items-center justify-center h-[100%] '>
+                        {/* <img src="/home/phone.png" alt="Main Phone Case" className="h-[80%] mx-auto drop-shadow-2xl object-cover object-center min-h-72 max-h-96" /> */}
+                        <video
+                            key={selectedVideo} // reloads when switching
+                            className="h-full w-full  object-fill object-center min-h-72  rounded-2xl"
+                            src={selectedVideo === "phone" ? "/home/ph.mp4" : "/home/wallart.mp4"}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                        />
                         <div className='absolute top-10 right-4 h-40 w-14 bg-white rounded-full  flex items-center justify-center flex-col gap-4'>
-                            <div className='flex items-center justify-center flex-col gap-1 bg-[#b7b7b7] w-full h-1/2 rounded-t-full pt-1'>
+                            <button
+                                onClick={() => setSelectedVideo("phone")}
+                                className={`flex items-center justify-center flex-col gap-1 ${selectedVideo === "phone" ? "bg-[#b7b7b7]" : "bg-white"
+                                    } w-full h-1/2 rounded-t-full pt-1`}>
                                 <img loading='lazy' className='h-16 w-fit' src="/4productpage/1img.png" alt="" />
                                 <div className='h-2 w-2 rounded-full bg-black'></div>
-                            </div>
-                            <div className='flex items-center justify-center flex-col gap-1 pb-1'>
-                                <img loading='lazy' className='h-12 w-12' src="/5wallartproduct/persion.png" alt="" />
-                                <div className='h-2 w-2 rounded-full bg-black'></div>
-                            </div>
+                            </button>
+                            <button
+                                onClick={() => setSelectedVideo("wallart")}
+                                className={`flex items-center justify-center flex-col gap-1 pb-1 w-full h-1/2 rounded-b-full ${selectedVideo === "wallart" ? "bg-[#b7b7b7]" : "bg-white"
+                                    }`}
+                            >
+                                <img
+                                    loading="lazy"
+                                    className="h-12 w-12"
+                                    src="/5wallartproduct/persion.png"
+                                    alt="Wall Art Selector"
+                                />
+                                <div className="h-2 w-2 rounded-full bg-black"></div>
+                            </button>
                         </div>
                     </div>
-                    <button className=" px-6 py-2 text-sm bg-black text-white rounded-full w-fit">Shop Now</button>
+                    <Link to="/phonecase" className=" px-6 py-2 text-sm bg-black text-white rounded-full w-fit absolute bottom-5 left-5">Shop Now</Link>
 
                 </div>
-            </section>
+            </section >
 
             <section className=" py-8">
                 <div className="text-center mb-6 text-white">
                     <h2 className="text-xl font-semibold bg-white text-black inline-block px-6 py-2 rounded-full">Shop By Category</h2>
-                    <div className="mt-4 space-x-6">
-                        <button
-                            className={categoryActiveSlug === "phone-case" ? "underline" : ""}
-                            onClick={() => setcategoryActiveSlug("phone-case")}
-                        >
-                            Phone Case
-                        </button>
-                        <button
-                            className={categoryActiveSlug === "wall-art" ? "underline" : ""}
-                            onClick={() => setcategoryActiveSlug("wall-art")}
-                        >
-                            Wall Art
-                        </button>
+                    <div className='flex mt-4 space-x-6 justify-center items-center'>
+                        {categoryType.map((data, i) => (
+                            <div key={i} className="">
+                                <button
+                                    className={`underline`}
+                                    onClick={() => setCategoryActiveSlug(data.slug)}
+                                >
+                                    {data.name}
+                                </button>
+                            </div>
+                        ))}
                     </div>
                 </div>
 
@@ -220,9 +251,13 @@ const Home = () => {
                             selected.children.map((child) => (
                                 <div
                                     key={child.id}
-                                    className="min-w-[15rem] bg-cover bg-center rounded-t-full h-[24rem] flex flex-col justify-end items-center"
-                                    style={{ backgroundImage: "url('/w2.png')" }}
+                                    className="min-w-[15rem] bg-cover bg-center rounded-t-full h-[25rem] flex flex-col justify-end items-center"
                                 >
+                                    <img
+                                        src={child.image_link}
+                                        alt={child.name}
+                                        className="w-full h-full max-h-[21rem]"
+                                    />
                                     <div className="bg-white w-full text-center py-2 rounded-b-md">
                                         <button className="text-black font-medium text-xl">
                                             {child.name}
@@ -248,44 +283,36 @@ const Home = () => {
                 </div>
             </section>
 
-            <section className="relative text-white   h-auto  p-4 max-w-[1200px] mx-auto my-5">
 
-                {/* Background "PLATINUM" Text */}
-                <h1 className="absolute text-[clamp(2.5rem,10vw,40rem)] font-extrabold text-white opacity-90 top-[-2%] z-[-1] left-1/2 -translate-x-1/2">
-                    PLATINUM
-                </h1>
+            <section>
+                <div className='flex flex-col justify-center items-center'>
+                    <img src="/home/card-text-first.png" className='w-[clamp(3rem,70vw,100rem)]  z-[-1] mb-[-15%]' data-aos="fade-up" data-aos-delay="1800" alt="" />
+                    <div className='flex justify-center items-center'>
+                        <img src="/home/small-card.png" className='w-[clamp(1rem,8vw,10rem)] z-10' alt="" />
+                        <div className="relative w-full sm:rounded-2xl md:rounded-[30px] overflow-hidden shadow-lg mx-2 flex justify-center items-center ml-[-4%] z-0 rounded-2xl" data-aos="fade-up" data-aos-delay="500">
+                            <img
+                                src="/home/card.png"
+                                alt="Platinum Card"
+                                className="w-[clamp(10vw,80vw,80vw)] h-auto object-contain rounded-2xl"
+                                loading="lazy"
+                            />
 
-                {/* Top Text */}
-                <div className="z-10 text-[clamp(0.8rem,1.5vw,40rem)] mb-4 text-center absolute top-[-2%] left-1/2 -translate-x-1/2">
-                    Sign Up ! and Get Access To Your
-                </div>
+                            {/* Button Image should be inside this relative container */}
+                            <img
+                                src="/home/card-button.png"
+                                className="absolute bottom-[27%] left-[37%]  w-[clamp(1rem,20vw,50rem)]"
+                                alt=""
+                            />
+                        </div>
 
-                {/* Main Content Wrapper */}
-                {/* <div className="flex items-center justify-center relative z-10 w-full max-w-[1200px] mt-4"> */}
+                    </div>
 
-                {/* Vertical "CARD" Text */}
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 rotate-[-90deg] text-[clamp(1rem,3.5vw,50rem)] font-semibold tracking-widest z-10">
-                    CARD
-                </div>
 
-                {/* Card Image */}
-                <div className="w-full  rounded-xl sm:rounded-2xl md:rounded-[30px] overflow-hidden shadow-lg mx-2 flex justify-center items-center">
-                    <img
-                        src="/home/pcard.png"
-                        alt="Platinum Card"
-                        className="w-full max-w-[1000px] h-auto object-contain"
-                        loading="lazy"
-                    />
-                </div>
-                {/* </div> */}
-
-                {/* Bottom Text */}
-                <div className="z-10 text-[clamp(0.8rem,1vw,40rem)] underline text-center absolute bottom-0 left-1/2 -translate-x-1/2">
-                    What Is Black5’s Platinum Card ?
                 </div>
             </section>
 
-            <div className="bg-white text-black py-10 px-2 sm:px-10 font-sans w-[85%] max-lg:w-[95%] rounded-4xl mx-auto my-5 flex justify-between flex-col-reverse lg:flex-row max-xl:max-w-2xl max-w-[1400px] " style={{ rowGap: '1rem' }}>
+
+            <div className="bg-white text-black py-10 px-2 sm:px-10 font-sans w-[85%] max-lg:w-[95%] rounded-4xl mx-auto my-5 flex justify-between max-lg:flex-col-reverse flex-row max-lg:max-w-2xl max-w-[1400px] " style={{ rowGap: '1rem' }}>
                 <div className=" w-full lg:w-[40%]">
                     <h2 className="text-xl font-semibold mb-2 text-center">Our Customer Reviews</h2>
                     <div className='flex flex-col justify-center items-center '>
@@ -812,7 +839,7 @@ const Home = () => {
                 {/* Bottom Section - West Bengal Card */}
 
             </div>
-        </div>
+        </div >
     )
 }
 

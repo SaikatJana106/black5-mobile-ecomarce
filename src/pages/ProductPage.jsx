@@ -2,32 +2,16 @@ import React, { useEffect, useRef, useState } from 'react'
 import { FaStar } from "react-icons/fa";
 import { RiShoppingBag3Fill } from "react-icons/ri";
 import { FaTruck } from "react-icons/fa";
-import { FaSackDollar } from "react-icons/fa6";
+import { FaSackDollar, FaPlus, FaMinus } from "react-icons/fa6";
 import { HiBadgeCheck } from "react-icons/hi";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import caseData from '../json/phonecasefiter.json'
 import { useParams } from "react-router-dom";
 import axios from 'axios';
+import parse, { domToReact } from "html-react-parser";
 const ProductPage = () => {
   const { productId } = useParams();
 
-  // ==================product api call====================
-  const [products, setProducts] = useState({});
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await axios.get(
-          `https://black5creations.orbitalwebworks.com/api/products/${productId}`
-        );
-
-        setProducts(res.data.data.product);
-      } catch (err) {
-        console.error("Error fetching products:", err);
-      }
-    };
-    fetchProducts();
-  }, [productId]);
-  // ==================product api call====================
 
   const reviews = [
     { id: 1, name: 'Ruma Bose', text: 'Ruma Bo gfg vgfgfg vgse etffhefdgvdgyr relef vfgv', images: [1, 2, 3] },
@@ -83,7 +67,40 @@ const ProductPage = () => {
   // arrow scroll logic 
 
   //================================== api call ====================================
-  const addtocart = async () => {
+
+  // ==================product api call====================
+  const [products, setProducts] = useState({});
+  const [variation, setVariation] = useState([]);
+  const [variationType, setvariationType] = useState("Hard Case")
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/products/${productId}`
+        );
+
+        setProducts(res.data.data.product);
+        setVariation(res.data.data.product.variations[0].options)
+        console.log(res.data.data.product.variations[0].options);
+
+      } catch (err) {
+        console.error("Error fetching products:", err);
+      }
+    };
+    fetchProducts();
+  }, [productId]);
+
+  const realProduct = variation.find((rp) => rp.variation_name === variationType)
+  console.log(realProduct);
+
+  // ==================product api call====================
+
+  const [quantity, setQuantity] = useState(1); // start with 1
+  const quantityIncrease = () => setQuantity(quantity + 1);
+  const quantityDecrease = () => setQuantity(quantity > 1 ? quantity - 1 : 1);
+
+  //============================ add to cart api call =======================================
+  const addtocart = async (product_id, variation_id) => {
     try {
       const token = localStorage.getItem("black5authtoken");
       if (!token) {
@@ -93,9 +110,9 @@ const ProductPage = () => {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/add-to-cart`,
         {
-          product_id: 1,
-          quantity: 1,
-          variation_id: 4
+          product_id: realProduct.id,
+          quantity: quantity,
+          variation_id: realProduct.variation_id
         },
         {
           headers: {
@@ -119,6 +136,8 @@ const ProductPage = () => {
       alert("An error occurred . Please try again.");
     }
   };
+  //============================ add to cart api call =======================================
+
 
   //================================== api call ====================================
 
@@ -142,7 +161,7 @@ const ProductPage = () => {
                 <img loading='lazy'
                   src={products.image_link}// replace with actual path
                   alt="Mayur Mayuri Case"
-                  className="w-[260px] h-auto rounded-xl"
+                  className="w-[360px] h-auto rounded-xl"
                 />
               </div>
             </div>
@@ -170,19 +189,19 @@ const ProductPage = () => {
           <div className="w-full xl:w-2/3 space-y-4">
             <h2 className="text-5xl font-semibold">{products.name}</h2>
             <div className="text-lg flex flex-col max-[1270px]:flex-row max-[1270px]:flex-wrap items-start w-fit gap-2">
-              {products?.variations?.map((variation, variationIndex) => (
-                variation.options.map((option, optionIndex) => (
-                  <div key={`${variationIndex}-${optionIndex}`} className="flex justify-center items-center gap-2">
+              {
+                variation.map((option, optionIndex) => (
+                  <div key={`${optionIndex}`} className="flex justify-center items-center gap-2">
                     <strong className="bg-black h-2 w-2 rounded-full"></strong>
-                    <span
-                      className={`px-2 rounded-full text-lg text-white ${optionIndex === 0 ? "bg-black" : "bg-black/30"
+                    <button onClick={() => (setvariationType(option.variation_name))}
+                      className={`px-2 rounded-full text-lg text-white cursor-pointer ${variationType === option.variation_name ? "bg-black" : "bg-black/30"
                         }`}
                     >
                       {option.variation_name}
-                    </span>
+                    </button>
                   </div>
                 ))
-              ))}
+              }
             </div>
 
             <div className="flex items-center text-yellow-500 text-lg">
@@ -190,25 +209,40 @@ const ProductPage = () => {
             </div>
 
             {/* Benefits */}
-            <div className='flex flex-col gap-2'>
-              {(products?.sort_description || "")
-                .split('</p>') // split each <p> tag
-                .map(item => item.replace('<p>', '').trim()) // remove opening <p> and trim
-                .filter(item => item !== '') // remove empty strings
-                .map((desc, idx) => (
-                  <div key={idx} className='flex items-start gap-2'>
-                    <strong className='bg-black h-2 w-2 rounded-full mt-2'></strong>
-                    <p className='text-gray-700 text-md'>{desc}</p>
+            <div className="flex flex-col gap-2 max-h-[60px] overflow-auto">
+              {(() => {
+                const raw = products?.sort_description || "";
+                let items = [];
+
+                // Case 1: if <li> exists, extract them
+                if (raw.includes("<li>")) {
+                  items = raw
+                    .split("</li>")
+                    .map(item => item.replace(/<li>|<\/?ul>/g, "").trim())
+                    .filter(Boolean);
+                } else {
+                  // Case 2: fallback - split by <p> or just treat as plain text
+                  items = raw
+                    .split(/<\/p>|<br\s*\/?>/gi)
+                    .map(item => item.replace(/<p>/g, "").trim())
+                    .filter(Boolean);
+                }
+
+                return items.map((desc, idx) => (
+                  <div key={idx} className="flex items-start gap-2 ">
+                    <strong className="bg-black h-2 w-2 rounded-full mt-2"></strong>
+                    <p className="text-gray-700 text-md">{desc}</p>
                   </div>
-                ))
-              }
+                ));
+              })()}
             </div>
+
 
             {/* Price */}
             <div className="flex items-center gap-4  border-3 border-black rounded-lg w-fit h-fit px-1 py-0 ">
               <div className='flex flex-col'>
                 <p>Include All Taxes</p>
-                <span className="text-sm font-semibold text-black">Rs. <span className='text-3xl'>{products.total_price}/-</span> Only</span>
+                {realProduct ? <span className="text-sm font-semibold text-black">Rs. <span className='text-3xl'>{realProduct.price}/-</span> Only</span> : null}
               </div>
               <div className='bg-black px-4 py-1  rounded-lg hover:bg-gray-800 flex flex-col justify-center items-center'>
                 <RiShoppingBag3Fill className='text-xl' color='white' />
@@ -216,6 +250,25 @@ const ProductPage = () => {
                   Add to Bag
                 </button>
               </div>
+            </div>
+            <div className="flex items-center gap-4 border border-black rounded-full px-4 py-2 w-fit">
+              <button
+                onClick={quantityDecrease}
+                className="p-2 rounded-full bg-black text-white hover:bg-gray-800 transition"
+              >
+                <FaMinus size={12} />
+              </button>
+
+              <span className="w-8 text-center font-semibold text-black">
+                {quantity}
+              </span>
+
+              <button
+                onClick={quantityIncrease}
+                className="p-2 rounded-full bg-black text-white hover:bg-gray-800 transition"
+              >
+                <FaPlus size={12} />
+              </button>
             </div>
             <div className='flex items-center bg-black w-fit px-4 py-2 rounded-lg gap-2'>
               <FaTruck className='text-xl text-white' />
@@ -225,17 +278,14 @@ const ProductPage = () => {
             </div>
 
             <div className="mt-4">
-              <h3 className='font-semibold'>Product Description</h3>
-              <ul>
-                {(products?.long_description || "")
-                  .split('</p>') // split each <p> tag
-                  .map(item => item.replace('<p>', '').trim()) // remove opening <p> and trim
-                  .filter(item => item !== '') // remove empty strings
-                  .map((desc, idx) => (
-                    <li key={idx}>{desc}</li>
-                  ))
-                }
-              </ul>
+              <h3 className='font-semibold text-2xl'>Product Description</h3>
+              <div className="max-h-28 overflow-auto">
+                {products?.long_description ? (
+                  parse(products.long_description)
+                ) : (
+                  <p>No description available</p>
+                )}
+              </div>
             </div>
 
             <div className='shadow-2xl rounded-2xl max-w-lg'>

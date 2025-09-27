@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-
+import { HiOutlineDotsVertical } from "react-icons/hi";
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("profile");
     // const [address, setAddress] = useState("");
@@ -104,33 +104,22 @@ const Dashboard = () => {
         }));
     };
     const [showForm, setShowForm] = useState(false);
-
+    const [showToolbox, setShowToolbox] = useState(null);
     const addAddress = async () => {
         try {
             const token = localStorage.getItem("black5authtoken");
             const response = await axios.post(
-                `${import.meta.env.VITE_API_URL}/add-new-addresss-book`,
+                `${import.meta.env.VITE_API_URL}/user/add-addresses`,
                 {
-                    billing_first_name: selectedAddress.first_name,
-                    billing_last_name: selectedAddress.last_name,
-                    billing_email: selectedAddress.email,
-                    billing_phone_number: selectedAddress.phone_number,
-                    billing_address: selectedAddress.address,
-                    billing_country: selectedAddress.country,
-                    billing_state: selectedAddress.state,
-                    billing_city: selectedAddress.city,
-                    billing_zip_code: selectedAddress.zip_code,
-
-                    shipping_first_name: selectedAddress.first_name,
-                    shipping_last_name: selectedAddress.last_name,
-                    shipping_email: selectedAddress.email,
-                    shipping_phone_number: selectedAddress.phone_number,
-                    shipping_address: selectedAddress.address,
-                    shipping_country: selectedAddress.country,
-                    shipping_state: selectedAddress.state,
-                    shipping_city: selectedAddress.city,
-                    shipping_zip_code: selectedAddress.zip_code,
-                    is_default: 1
+                    first_name: selectedAddress.first_name,
+                    last_name: selectedAddress.last_name,
+                    email: selectedAddress.email,
+                    phone: selectedAddress.phone_number,
+                    country: selectedAddress.country,
+                    state: selectedAddress.state,
+                    city: selectedAddress.city,
+                    address: selectedAddress.address,
+                    pincode: selectedAddress.zip_code,
                 },
                 {
                     headers: {
@@ -162,7 +151,7 @@ const Dashboard = () => {
                 const token = localStorage.getItem("black5authtoken");
 
                 const response = await axios.get(
-                    `${import.meta.env.VITE_API_URL}/get-saved-address`,
+                    `${import.meta.env.VITE_API_URL}/user/get-addresses`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
                     }
@@ -178,7 +167,113 @@ const Dashboard = () => {
         fetchaddress();
     }, []);
     //================================= featch adress ==========================================
+    //==================================== get user profile===================================
+    const [userProfile, setuserProfile] = useState(null);
+    useEffect(() => {
+        const fetchuserProfile = async () => {
+            try {
+                const token = localStorage.getItem("black5authtoken");
 
+                const response = await axios.get(
+                    `${import.meta.env.VITE_API_URL}/user/get-profile`,
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }
+                );
+
+                setuserProfile(response.data.data);
+                console.log(response.data);
+
+            } catch (error) {
+                console.error("Error fetching cart items:", error);
+            }
+        };
+
+        fetchuserProfile();
+    }, []);
+
+    //==================================== get user profile===================================
+    //==================================== order fetch =====================================
+    const [userOrder, setuserOrder] = useState([]);
+    useEffect(() => {
+        const fetchuserOrder = async () => {
+            try {
+                const token = localStorage.getItem("black5authtoken");
+
+                const response = await axios.get(
+                    `${import.meta.env.VITE_API_URL}/user/orders`,
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }
+                );
+
+                setuserOrder(response.data.data);
+
+            } catch (error) {
+                console.error("Error fetching cart items:", error);
+            }
+        };
+
+        fetchuserOrder();
+    }, []);
+    //==================================== order fetch =====================================
+
+    // ==================================order details fetch=============================== 
+    const [orderDetaldata, setOrderDetaldata] = useState(null);
+    const [orderAddress, setOrderAddress] = useState(null);
+    const [orderItems, setOrderItems] = useState([]);
+
+    const orderDetails = async (orderId) => {
+        try {
+            const token = localStorage.getItem("black5authtoken");
+            const response = await axios.get(
+                `${import.meta.env.VITE_API_URL}/user/orders/${orderId}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            const data = response.data.data;
+            setOrderDetaldata(data.order);
+            setOrderAddress(data.address);
+            setOrderItems(data.items);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    // ==================================order details fetch=============================== 
+    //================================= delete address ==============================
+    const deleteAdd = async (orderid) => {
+        try {
+            const token = localStorage.getItem("black5authtoken");
+
+            const response = await axios.delete(
+                `${import.meta.env.VITE_API_URL}/user/delete-addresses/${orderid}`,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const data = response.data;
+
+            if (data.success) {
+                alert("Address deleted successfully ✅");
+
+                // Remove the deleted address from UI immediately
+                setAddress((prev) => prev.filter((addr) => addr.id !== orderid));
+            } else {
+                alert(data.message || "Deleting address failed ❌");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("An error occurred. Please try again.");
+        }
+    };
+
+    //================================= delete address ==============================
+    //    ====================================== api call ===========================================
     return (
         <div className="min-h-screen flex flex-col items-center py-8">
             <div className="flex justify-center mb-5">
@@ -193,9 +288,9 @@ const Dashboard = () => {
                 {/* Sidebar */}
                 <div className="w-full md:w-1/4 bg-transparent border border-gray-600 rounded h-[50vh]">
                     <h2 className="bg-black text-white text-center py-3 font-bold rounded-t">
-                        Snehashis Bhirisrestha
+                        {userProfile?.first_name || ""} {userProfile?.last_name || ""}
                     </h2>
-                    <hr className=" text-white my-2"/>
+                    <hr className=" text-white my-2" />
                     <ul className="flex md:flex-col">
                         {["profile", "orders", "address"].map((tab) => (
                             <li
@@ -214,18 +309,19 @@ const Dashboard = () => {
                 </div>
 
                 {/* Main Content */}
-                <div className="w-full md:w-3/4 bg-transparent border border-gray-600 rounded p-6 text-white">
+                <div className="w- bg-transparent border border-gray-600 rounded p-6 text-white">
                     {activeTab === "profile" && (
                         <div>
                             <h2 className="bg-black px-4 py-2 rounded text-lg font-bold mb-4">
                                 Profile
                             </h2>
+
                             <div className="grid md:grid-cols-2 gap-4">
                                 <div>
                                     <label>First Name</label>
                                     <input
                                         type="text"
-                                        defaultValue="Snehashis"
+                                        defaultValue={userProfile?.first_name || ""}
                                         className="w-full px-3 py-2 border border-gray-500 bg-transparent rounded text-white"
                                     />
                                 </div>
@@ -233,7 +329,7 @@ const Dashboard = () => {
                                     <label>Last Name</label>
                                     <input
                                         type="text"
-                                        defaultValue="Bhirisrestha"
+                                        defaultValue={userProfile?.last_name || ""}
                                         className="w-full px-3 py-2 border border-gray-500 bg-transparent rounded text-white"
                                     />
                                 </div>
@@ -241,8 +337,7 @@ const Dashboard = () => {
                                     <label>Email</label>
                                     <input
                                         type="email"
-                                        defaultValue="snehasish7031@gmail.com"
-                                        disabled
+                                        defaultValue={userProfile?.email || ""}
                                         className="w-full px-3 py-2 border border-gray-500 bg-gray-800 text-gray-300 rounded"
                                     />
                                 </div>
@@ -250,7 +345,7 @@ const Dashboard = () => {
                                     <label>Phone</label>
                                     <input
                                         type="text"
-                                        placeholder="+91 1234567890"
+                                        defaultValue={userProfile?.phone || ""}
                                         className="w-full px-3 py-2 border border-gray-500 bg-transparent rounded text-white"
                                     />
                                 </div>
@@ -259,6 +354,7 @@ const Dashboard = () => {
                                 <label>Address:</label>
                                 <textarea
                                     rows={4}
+                                    defaultValue={userProfile?.adress || ""}
                                     placeholder="Street address, Apartment, Suite etc."
                                     className="w-full px-3 py-2 border border-gray-500 bg-transparent rounded text-white"
                                 />
@@ -267,6 +363,7 @@ const Dashboard = () => {
                                 Update Profile
                             </button>
                         </div>
+
                     )}
 
                     {activeTab === "orders" && (
@@ -274,27 +371,30 @@ const Dashboard = () => {
                             <h2 className="bg-black px-4 py-2 rounded text-lg font-bold mb-4">
                                 Orders
                             </h2>
-                            <div className="hidden md:grid grid-cols-5 text-center font-semibold mb-2">
-                                <p>Product</p>
-                                <p>Title</p>
-                                <p>Quantity</p>
+                            <div className="grid grid-cols-7 text-center font-semibold mb-2">
+                                <p>#</p>
+                                <p>Date</p>
+                                <p>Order ID</p>
                                 <p>Price</p>
-                                <p>Delivered At</p>
+                                <p>Status</p>
+                                <p>Payment</p>
+                                <p>Details</p>
                             </div>
-                            {orders.map((order) => (
+                            {userOrder.map((order) => (
                                 <div
                                     key={order.id}
-                                    className="flex flex-wrap md:grid md:grid-cols-5 items-center gap-4 border-b border-gray-600 py-3"
+                                    className="grid grid-cols-7 items-center gap-4 border-b border-gray-600 py-3"
                                 >
-                                    <img
-                                        src={order.image}
-                                        alt={order.name}
-                                        className="h-20 w-20 object-cover rounded"
-                                    />
-                                    <h3>{order.name}</h3>
-                                    <p className="text-center">{order.quantity}</p>
-                                    <p className="text-center">₹{order.price}</p>
-                                    <p className="text-center">{order.deliveryDate}</p>
+                                    <h3>{order.id}</h3>
+                                    <p className="text-center">{order.created_at}</p>
+                                    <p className="text-center">{order.order_number}</p>
+                                    <p className="text-center">₹{order.total_amount}</p>
+                                    <p className="text-center">{order.order_status}</p>
+                                    <p className="text-center">{order.payment_method}</p>
+                                    <button onClick={() => {
+                                        orderDetails(order.id);  // Call the function with the correct ID
+                                        setActiveTab("orderDetail");     // Set the active tab
+                                    }}>View</button>
                                 </div>
                             ))}
                         </div>
@@ -309,10 +409,15 @@ const Dashboard = () => {
                                 <div className="flex items-start gap-5 cursor-pointer flex-wrap justify-between">
                                     {address.map((addr, index) => (
 
-                                        <div key={addr.id}>
-                                            <p className="font-medium">
-                                                {addr.billing_first_name} {addr.billing_last_name}
-                                            </p>
+                                        <div key={addr.id} className="min-w-40">
+                                            <div className="flex justify-between items-center">
+                                                <p className="font-medium">
+                                                    {addr.billing_first_name} {addr.billing_last_name}
+                                                </p>
+                                                <HiOutlineDotsVertical onClick={() => setShowToolbox(showToolbox === addr.id ? null : addr.id)
+                                                }
+                                                    className="cursor-pointer" />
+                                            </div>
                                             <p> {addr.billing_phone_number}</p>
                                             <p>
                                                 {addr.billing_country}, {addr.billing_state}
@@ -321,17 +426,32 @@ const Dashboard = () => {
                                                 {addr.billing_city}, {addr.billing_zip_code}
                                             </p>
                                             <p className="text-sm text-gray-300">{addr.billing_address}</p>
+                                            {showToolbox === addr.id && (
+                                                <div className="mt-2">
+                                                    <button
+                                                        onClick={() => deleteAdd(addr.id)}
+                                                        className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 cursor-pointer"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            )}
+
                                         </div>
 
                                     ))}
                                 </div>
                             )}
+
+
+
                             <button
                                 className="mt-2 text-sm font-semibold border border-white px-3 py-1 rounded hover:bg-white hover:text-black transition"
                                 onClick={() => setShowForm(!showForm)}
                             >
                                 {showForm ? "Cancel" : "➕ Add New Address"}
                             </button>
+
 
                             {showForm && (
                                 <div className="mt-4 space-y-3">
@@ -457,7 +577,130 @@ const Dashboard = () => {
                             )}
                         </div>
                     )}
+
+                    {activeTab === "orderDetail" &&
+                        <div className="p-6 border border-white text-white bg-transparent rounded-lg">
+
+
+                            {/* Order Number */}
+                            <div className="text-center my-6">
+                                <h2 className="text-2xl font-bold">
+                                    Order Number: #{orderDetaldata?.order_number || ""}
+                                </h2>
+                            </div>
+
+                            {/* Status & Payment Info */}
+                            <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
+                                <div>
+                                    <p>
+                                        Status:{" "}
+                                        <span className="font-semibold">
+                                            {orderDetaldata?.order_status || "N/A"}
+                                        </span>
+                                    </p>
+                                    <p>Payment Method: {orderDetaldata?.payment_method || "N/A"}</p>
+                                    <p>Payment Status: {orderDetaldata?.payment_status || "N/A"}</p>
+                                    <p>Transaction ID: {orderDetaldata?.transaction_id || "N/A"}</p>
+                                </div>
+                                <div className="text-right">
+                                    <p>
+                                        Date:{" "}
+                                        {orderDetaldata?.payment_date
+                                            ? new Date(orderDetaldata.payment_date).toLocaleString()
+                                            : "N/A"}
+                                    </p>
+                                    <p>
+                                        Updated:{" "}
+                                        {orderDetaldata?.updated_at
+                                            ? new Date(orderDetaldata.updated_at).toLocaleString()
+                                            : "N/A"}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Addresses */}
+                            <div className="grid grid-cols-2 gap-8 mb-6 text-sm">
+                                {/* Shipping */}
+                                <div>
+                                    <h3 className="font-semibold text-lg mb-2">Shipping Address</h3>
+                                    <p>First Name: {orderAddress?.shipping_first_name || ""}</p>
+                                    <p>Last Name: {orderAddress?.shipping_last_name || ""}</p>
+                                    <p>Email: {orderAddress?.shipping_email || ""}</p>
+                                    <p>Phone Number: {orderAddress?.shipping_phone_number || ""}</p>
+                                    <p>Address: {orderAddress?.shipping_address || ""}</p>
+                                    <p>Country: {orderAddress?.shipping_country || ""}</p>
+                                    <p>State: {orderAddress?.shipping_state || ""}</p>
+                                    <p>City: {orderAddress?.shipping_city || ""}</p>
+                                    <p>Pincode: {orderAddress?.shipping_zip_code || ""}</p>
+                                </div>
+
+                                {/* Billing */}
+                                <div>
+                                    <h3 className="font-semibold text-lg mb-2">Billing Address</h3>
+                                    <p>First Name: {orderAddress?.billing_first_name || ""}</p>
+                                    <p>Last Name: {orderAddress?.billing_last_name || ""}</p>
+                                    <p>Email: {orderAddress?.billing_email || ""}</p>
+                                    <p>Phone Number: {orderAddress?.billing_phone_number || ""}</p>
+                                    <p>Address: {orderAddress?.billing_address || ""}</p>
+                                    <p>Country: {orderAddress?.billing_country || ""}</p>
+                                    <p>State: {orderAddress?.billing_state || ""}</p>
+                                    <p>City: {orderAddress?.billing_city || ""}</p>
+                                    <p>Pincode: {orderAddress?.billing_zip_code || ""}</p>
+                                </div>
+                            </div>
+
+                            {/* Products */}
+                            <h3 className="font-semibold text-lg mb-3">Products</h3>
+                            <table className="w-full border border-white text-sm">
+                                <thead>
+                                    <tr className="border-b border-white">
+                                        <th className="p-2 text-left">Product</th>
+                                        <th className="p-2">Unit Price</th>
+                                        <th className="p-2">Quantity</th>
+                                        <th className="p-2">GST</th>
+                                        <th className="p-2">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {orderItems?.map((item) => (
+                                        <tr key={item.id} className="border-b border-white">
+                                            <td className="flex items-center gap-2 p-2">{item.product_name}</td>
+                                            <td className="p-2 text-center">{item.price}</td>
+                                            <td className="p-2 text-center">{item.quantity}</td>
+                                            <td className="p-2 text-center">0</td>
+                                            <td className="p-2 text-center">{item.subtotal}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+
+                            {/* Totals */}
+                            <div className="mt-6 text-right space-y-1 text-sm">
+                                <p>
+                                    Subtotal <span className="ml-4 font-semibold">{orderDetaldata?.price_subtotal || 0}</span>
+                                </p>
+                                <p>
+                                    GST <span className="ml-4 font-semibold">{orderDetaldata?.price_gst || 0}</span>
+                                </p>
+                                <p>
+                                    Shipping <span className="ml-4 font-semibold">{orderDetaldata?.price_shipping || 0}</span>
+                                </p>
+                                <p>
+                                    Coupon Discount <span className="ml-4 font-semibold">{orderDetaldata?.coupone_discount || 0}</span>
+                                </p>
+                                <p>
+                                    Total Discount <span className="ml-4 font-semibold">{orderDetaldata?.discounted_price || 0}</span>
+                                </p>
+                                <p className="text-lg font-bold">
+                                    Total <span className="ml-4">{orderDetaldata?.total_amount || 0}</span>
+                                </p>
+                            </div>
+                        </div>
+
+                    }
+
                 </div>
+
             </div>
         </div>
     );
