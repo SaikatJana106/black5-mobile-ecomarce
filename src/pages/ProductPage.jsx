@@ -110,9 +110,9 @@ const ProductPage = () => {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/add-to-cart`,
         {
-          product_id: realProduct.id,
+          product_id: products.id,
           quantity: quantity,
-          variation_id: realProduct.variation_id
+          variation_id: realProduct.id
         },
         {
           headers: {

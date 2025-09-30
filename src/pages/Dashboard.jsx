@@ -138,7 +138,7 @@ const Dashboard = () => {
                 alert(data.message || "Adding address failed ❌");
             }
         } catch (error) {
-            console.error("Error:", error);
+            console.error("add adress  Error:", error);
             alert("An error occurred. Please try again.");
         }
     };
@@ -185,7 +185,7 @@ const Dashboard = () => {
                 console.log(response.data);
 
             } catch (error) {
-                console.error("Error fetching cart items:", error);
+                console.error("Error fetching profile:", error);
             }
         };
 
@@ -210,7 +210,7 @@ const Dashboard = () => {
                 setuserOrder(response.data.data);
 
             } catch (error) {
-                console.error("Error fetching cart items:", error);
+                console.error("Error fetching orer items:", error);
             }
         };
 
@@ -236,7 +236,7 @@ const Dashboard = () => {
             setOrderAddress(data.address);
             setOrderItems(data.items);
         } catch (error) {
-            console.error(error);
+            console.error("error fetching order details",error);
         }
     };
 
@@ -259,15 +259,15 @@ const Dashboard = () => {
             const data = response.data;
 
             if (data.success) {
-                alert("Address deleted successfully ✅");
+                alert("Address deleted successfully");
 
                 // Remove the deleted address from UI immediately
                 setAddress((prev) => prev.filter((addr) => addr.id !== orderid));
             } else {
-                alert(data.message || "Deleting address failed ❌");
+                alert(data.message || "Deleting address failed");
             }
         } catch (error) {
-            console.error("Error:", error);
+            console.error("delete address Error:", error);
             alert("An error occurred. Please try again.");
         }
     };
