@@ -1,37 +1,40 @@
 import React, { useRef, useEffect, useState } from 'react'
 import phoneCases from "../json/phonecase.json"
 import phones from "../json/phone.json"
+import axios from "axios";
+// ...existing code...
 import data from '../json/wallartproduct.json'
 import wallart from '../json/wallart.json'
-import { FaStar } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight, FaStar } from 'react-icons/fa';
 import { CiSearch } from "react-icons/ci";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import wallartfiltersData from '../json/wallartfilterdata.json';
+import { Link } from 'react-router-dom';
 const WallArt = () => {
-    const categories = [
-        {
-            title: 'Afordable Wall arts',
-            items: [
-                '/wallart/frame.png',
-                '/wallart/frame2.png',
-                '/wallart/frame.png',
-                '/wallart/frame2.png',
-            ],
-        },
-        {
-            title: 'Premium Wall Arts',
-            items: ['/wallart/house.png'],
-        },
-        {
-            title: 'Best For Gifting',
-            items: ['/images/gift1.png', '/images/custom1.png'],
-            subtitles: ['Best For Gifting', 'Customized Wall arts'],
-        },
-        {
-            title: 'Limited Edition Wall arts',
-            items: ['/wallart/longframe3.png'],
-        },
-    ];
+    // const categories = [
+    //     {
+    //         title: 'Afordable Wall arts',
+    //         items: [
+    //             '/wallart/frame.png',
+    //             '/wallart/frame2.png',
+    //             '/wallart/frame.png',
+    //             '/wallart/frame2.png',
+    //         ],
+    //     },
+    //     {
+    //         title: 'Premium Wall Arts',
+    //         items: ['/wallart/house.png'],
+    //     },
+    //     {
+    //         title: 'Best For Gifting',
+    //         items: ['/images/gift1.png', '/images/custom1.png'],
+    //         subtitles: ['Best For Gifting', 'Customized Wall arts'],
+    //     },
+    //     {
+    //         title: 'Limited Edition Wall arts',
+    //         items: ['/wallart/longframe3.png'],
+    //     },
+    // ];
 
     // filter logic 
     const filterSectionRef = useRef(null);
@@ -60,6 +63,103 @@ const WallArt = () => {
 
     // filter logic 
 
+    // api call 
+    //======================= category api call =================
+    const [categories, setCategories] = useState([]);
+    const [categoryActiveSlug, setCategoryActiveSlug] = useState("wall-art"); // default active
+    const [categoryType, setCategoryType] = useState([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/categories`);
+                // Extract categories from response
+                const cattype = res.data.data.categories.data;
+                setCategories(cattype);
+                setCategoryType(cattype); // if you want to use categoryType separately
+                console.log("Fetched categories:", cattype);
+            } catch (err) {
+                console.error("Error fetching categories:", err);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+
+    const selected = categories.find((c) => c.slug === categoryActiveSlug);
+
+    // =================category api call ===========================
+    // ====================== fretured api call======================  
+    const [featurepanels, setFeaturepanels] = useState([]);
+
+    useEffect(() => {
+        const fetchFeaturepanels = async () => {
+            try {
+                const token = localStorage.getItem("black5authtoken");
+
+                const response = await axios.get(
+                    `${import.meta.env.VITE_API_URL}/feature-panels/wall-art`,
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }
+                );
+
+                setFeaturepanels(response.data.data);
+                console.log(response.data);
+
+            } catch (error) {
+                console.error("Error fetching cart items:", error);
+            }
+        };
+
+        fetchFeaturepanels();
+    }, []);
+    // ====================== fretured api call======================  
+
+    // ====================== product api call =====================
+    const [products, setProducts] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [lastPage, setLastPage] = useState(1);
+
+    const fetchProducts = async (page = 1) => {
+        try {
+            const res = await axios.get(
+                `${import.meta.env.VITE_API_URL}/products?page=${page}&&type=wallart`
+            );
+
+            const productData = res.data.data.products.data.filter(
+                (p) => p.is_visible === 1
+            );
+            setProducts(productData);
+
+            // Set the last page from response
+            setLastPage(res.data.data.products.last_page);
+        } catch (err) {
+            console.error("Error fetching products:", err);
+        } finally {
+        }
+    };
+
+    useEffect(() => {
+        fetchProducts(currentPage);
+    }, [currentPage]);
+
+    const handlePrev = () => {
+        if (currentPage > 1) {
+            setCurrentPage((prev) => prev - 1);
+        }
+    };
+
+    const handleNext = () => {
+        if (currentPage < lastPage) {
+            setCurrentPage((prev) => prev + 1);
+        }
+    };
+
+    // ====================== product api call =====================
+
+
     // arrow scroll logic 
     // =================phone case=============
     const wallartRef = useRef(null);
@@ -73,6 +173,19 @@ const WallArt = () => {
         }
     };
     // ===============phone case==============
+    //======================category===================
+
+    const categoryscrollRef = useRef(null);
+
+    const categoryscroll = (direction) => {
+        if (categoryscrollRef.current) {
+            categoryscrollRef.current.scrollBy({
+                left: direction === "left" ? -400 : 401,
+                behavior: "smooth",
+            });
+        }
+    };
+    //======================category===================
     // arrow scroll logic
 
     return (
@@ -100,7 +213,7 @@ const WallArt = () => {
             <section className="grid grid-cols-4 max-[1235px]:grid-cols-2 max-sm:grid-cols-1 w-fit gap-5 p-8  bg-cover bg-center h-fit text-black rounded-3xl -mt-20 z-10 relative max-w-[1400px] mx-auto"
                 style={{ placeItems: "center" }}
             >
-                <div className="bg-[#cfcfcf] rounded-xl shadow-md w-72 p-4 space-y-3">
+                <div className="bg-[#cfcfcf] rounded-xl shadow-md w-72 max-sm:w-full p-4 space-y-3">
                     <h3 className="text-sm font-semibold text-gray-800">Afordable Wall arts</h3>
                     <div className="grid grid-cols-2 gap-2 h-56">
                         <div className="overflow-hidden rounded-md">
@@ -137,7 +250,7 @@ const WallArt = () => {
                     </button>
                 </div>
 
-                <div className="bg-[#cfcfcf] rounded-xl shadow-md w-72 p-4 space-y-3">
+                <div className="bg-[#cfcfcf] rounded-xl shadow-md w-72 p-4 space-y-3 max-sm:hidden">
                     <h3 className="text-sm font-semibold text-gray-800">Afordable Wall arts</h3>
                     <div className="overflow-hidden rounded-md">
                         <img
@@ -151,7 +264,7 @@ const WallArt = () => {
                     </button>
                 </div>
 
-                <div className="bg-[#cfcfcf] rounded-xl shadow-md w-72 p-4">
+                <div className="bg-[#cfcfcf] rounded-xl shadow-md w-72 p-4 max-sm:hidden">
                     <div className='space-y-3'>
                         <div>
                             <p>Best For Gifting</p>
@@ -181,7 +294,7 @@ const WallArt = () => {
                 </div>
 
 
-                <div className="bg-[#cfcfcf] rounded-xl shadow-md w-72 p-4 space-y-3">
+                <div className="bg-[#cfcfcf] rounded-xl shadow-md w-72 p-4 space-y-3 max-sm:hidden">
                     <h3 className="text-sm font-semibold text-gray-800">Afordable Wall arts</h3>
                     <div className="overflow-hidden rounded-md">
                         <img
@@ -207,31 +320,26 @@ const WallArt = () => {
                 <div className="flex items-center justify-center gap-2 mb-6 w-[75%] max-xl:w-[95%] max-w-[1400px] mx-auto">
                     <button onClick={() => wallartscroll("left")} className="text-2xl text-white hover:text-gray-300">&#10094;</button>
                     <div ref={wallartRef} className="flex overflow-hidden gap-6 scrollbar-hide px-4">
-                        {phoneCases.map((item) => (
-                            <div
-                                key={item.id}
-                                className="min-w-[150px] max-w-[150px] flex-shrink-0 text-center relative"
-                            >
-                                <img loading='lazy'
-                                    src={item.image}
-                                    alt={item.name}
-                                    className="w-full h-auto rounded-lg shadow-md "
-                                />
-                                <div className='absolute top-0 left-2 '>
-                                    <h3 className="mt-2 text-sm font-semibold">{item.name}</h3>
-                                    <div className="flex mt-1 text-yellow-400 text-sm">
-                                        {Array(5)
-                                            .fill()
-                                            .map((_, i) => (
-                                                <FaStar key={i} />
-                                            ))}
+                        {Array.isArray(featurepanels) && featurepanels.length > 0 ? (
+                            featurepanels.map((item) => (
+                                <div
+                                    key={item.id}
+                                    className="min-w-[300px] max-w-[300px] flex-shrink-0 text-center relative"
+                                >
+                                    <img
+                                        loading="lazy"
+                                        src={item.image}
+                                        alt={item.title}
+                                        className="w-full h-auto rounded-lg shadow-md object-cover"
+                                    />
+                                    <div className="absolute top-2 left-[5%]">
+                                        <h3 className="mt-2 text-sm font-semibold bg-black/60 rounded-2xl p-2">{item.title}</h3>
                                     </div>
-                                    <p className="text-white mt-1 text-sm text-left">
-                                        Price: <span className="font-bold">₹{item.price}/-</span>
-                                    </p>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        ) : (
+                            <p className="text-center text-gray-400">No featured panels found.</p>
+                        )}
                     </div>
                     <button onClick={() => wallartscroll("right")} className="text-2xl text-white hover:text-gray-300">&#10095;</button>
                 </div>
@@ -243,12 +351,12 @@ const WallArt = () => {
             <section>
                 <div className="text-center mb-6">
                     <button className="px-4 py-1 bg-white text-black rounded-full font-medium mb-2 text-2xl">
-                        Explore Our Cases
+                        Explore Our Wall Arts
                     </button>
-                    <p className="text-gray-400">The Feature Panel</p>
+                    <p className="text-gray-400">Specilly Designed Wall Arts For Everyone</p>
                 </div>
 
-                <div className="flex flex-wrap gap-2 items-start justify-around p-8 my-5  bg-cover bg-center h-fit text-black rounded-3xl z-10 relative w-[85%] max-lg:w-[90%] max-w-[1400px] mx-auto"
+                {/* <div className="flex flex-wrap gap-2 items-start justify-around p-8 my-5  bg-cover bg-center h-fit text-black rounded-3xl z-10 relative w-[85%] max-lg:w-[90%] max-w-[1400px] mx-auto"
                     style={{ backgroundImage: "url('/2phonecover/3banner.png')" }}
                 >
                     {wallart.map((item, index) => (
@@ -271,16 +379,108 @@ const WallArt = () => {
                             </p>
                         </div>
                     ))}
+                </div> */}
+
+                <div className="flex items-center w-[90%] mx-auto justify-center py-8">
+                    {/* Left Arrow */}
+                    <button
+                        onClick={() => categoryscroll("left")}
+                        className="h-fit bg-white p-2 rounded-full text-black"
+                    >
+                        <FaChevronLeft />
+                    </button>
+
+                    {/* Carousel categoryScroll Section */}
+                    <div
+                        ref={categoryscrollRef}
+                        className="flex gap-5 overflow-x-auto scrollbar-hide scroll-smooth px-8"
+                    >
+                        {selected && selected.children?.length > 0 ? (
+                            selected.children.map((child) => (
+                                <div
+                                    key={child.id}
+                                    className="min-w-[15rem] bg-cover bg-center rounded-t-full h-[25rem] min-h-fit flex flex-col justify-end items-center"
+                                >
+                                    <img
+                                        src={child.image_link}
+                                        alt={child.name}
+                                        className="w-full h-full"
+                                    />
+                                    <div className="bg-white w-full text-center py-2 rounded-b-md">
+                                        <button className="text-black font-medium text-xl">
+                                            {child.name}
+                                        </button>
+                                        <div>
+                                            <button className="underline text-xs text-black">View All</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-white">No subcategories found</p>
+                        )}
+                    </div>
+
+                    {/* Right Arrow */}
+                    <button
+                        onClick={() => categoryscroll("right")}
+                        className="h-fit bg-white p-2 rounded-full text-black"
+                    >
+                        <FaChevronRight />
+                    </button>
                 </div>
             </section>
             {/* case oprtion choose  */}
 
 
             {/* ================================last section ============================================= */}
-            <div ref={filterSectionRef} className="flex max-lg:p-0 text-white flex-col lg:flex-row p-15 rounded-3xl shadow-lg gap-6 min-h-screen w-[85%] max-lg:w-[95%] max-w-[1400px] mx-auto mb-5">
-                {/* Filter Sidebar */}
+
+            <div ref={filterSectionRef} className=" bg-white text-black p-15 max-lg:p-6 rounded-3xl shadow-lg gap-6 h-screen w-[85%] max-lg:w-[95%] mx-auto mb-5 max-w-[1400px] max-h-96 min-h-fit">
+
+                <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 justify-between gap-5 h-fit w-full '>
+                    {products.map((item) => (
+                        <div key={item.id} className="flex flex-col items-center text-center space-y-1">
+                            <Link to={`/phone-case-product/${item.id}`}>
+                                <img
+                                    src={item.image_link ? item.image_link : "/5wallartproduct/persion.png"}
+                                    alt={item.name}
+                                    className="w-[clamp(150px,25vw,350px)] h-[clamp(150px,25vw,350px)] rounded-md "
+                                    loading='lazy'
+                                />
+                            </Link>
+                            <Link to={`/phone-case-product/${item.id}`} className="text-[clamp(1rem,1.5vw,5rem)] font-medium hover:underline">{item.name}</Link >
+                            <Link to={`/phone-case-product/${item.id}`} className="text-xs font-medium hover:underline">{item.type}</Link >
+                            <div className="text-yellow-500 text-sm">
+                                {"★".repeat(4)}{"☆".repeat(1)}
+                            </div>
+                            <p className="text-[clamp(0.8rem,0.8vw,5rem)] font-semibold">Price: ₹{item.product_price}</p>
+                        </div>
+                    ))}
+                </div>
+                <div className="flex gap-5 w-full justify-end items-end  mt-5" >
+                    <button
+                        onClick={handlePrev}
+                        disabled={currentPage === 1}
+                        className="px-6 py-2 bg-black text-white font-medium rounded-full shadow-sm hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Prev
+                    </button>
+                    <button
+                        onClick={handleNext}
+                        disabled={currentPage === lastPage}
+                        className="px-6 py-2 bg-black text-white font-medium rounded-full shadow-md hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Next
+                    </button>
+                </div>
+
+            </div>
+
+
+
+            {/* <div ref={filterSectionRef} className="flex max-lg:p-0 text-white flex-col lg:flex-row p-15 rounded-3xl shadow-lg gap-6 min-h-screen w-[85%] max-lg:w-[95%] max-w-[1400px] mx-auto mb-5">
+                Filter Sidebar
                 <div className="lg:w-1/4 space-y-6 border-r pr-4 max-lg:hidden">
-                    {/* Filter */}
                     {wallartfiltersData.filters.map((section, index) => (
                         <div key={index}>
                             <h2 className="font-semibold mb-2">{section.title}</h2>
@@ -297,30 +497,8 @@ const WallArt = () => {
 
                 </div>
 
-                {/* Product Grid */}
                 <div className="lg:w-3/4 w-full space-y-10 bg-white p-10 text-black rounded-4xl">
-                    {[
-                        {
-                            label: "Phone Cases For Women's",
-                            items: data.filter(item => item.category === "school")
-                        },
-                        {
-                            label: "Phone Cases For Men",
-                            items: data.filter(item => item.category === "culture")
-                        },
-                        // {
-                        //   label: "Phone Cases For Couples",
-                        //   items: data.products.filter(item => item.category === "couples")
-                        // },
-                        // {
-                        //   label: "Phone Cases Unisex",
-                        //   items: data.products.filter(item => item.category === "unisex")
-                        // },
-                        // {
-                        //   label: "Customized Phone Cases",
-                        //   items: data.products.filter(item => item.category === "customized")
-                        // }
-                    ].map((section, i) => (
+                    {data.map((section, i) => (
                         <div key={i}>
                             <h3 className=" text-white bg-black font-semibold text-center w-max mx-auto px-4 py-1 text-lg rounded-full mb-1">
                                 {section.label}
@@ -348,10 +526,9 @@ const WallArt = () => {
                         </div>
                     ))}
                 </div>
-            </div>
+            </div> */}
 
-            {/* Mobile Filter Offcanvas */}
-            <div
+            {/* <div
                 id="mobile-filter"
                 className="hidden fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
                 onClick={() => document.getElementById('mobile-filter').classList.add('hidden')}
@@ -404,7 +581,7 @@ const WallArt = () => {
                         </svg>
                     </button>
                 </div>
-            )}
+            )} */}
 
         </div>
     )

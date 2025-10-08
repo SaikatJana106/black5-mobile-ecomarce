@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Link,  useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FaBars, FaTimes } from 'react-icons/fa';
 import axios from 'axios';
 
@@ -23,7 +23,7 @@ const Header = () => {
     setIsLoggedIn(false);
 
     // Redirect to the login/signup page
-    navigate('/login');
+    navigate('/signin');
   };
 
   //====================== logout ======================
@@ -39,7 +39,7 @@ const Header = () => {
           <Link to={"/phonecase"} className='text-white underline text-[1.2rem]'>Phone Cases</Link>
           {/* <Link to={"/product"} className='text-white underline text-[1.2rem]'>Product Page</Link> */}
           <Link to={"/wallart"} className='text-white underline text-[1.2rem]'>Wall Art</Link>
-          <Link to={"/wallartproduct"} className='text-white underline text-[1.2rem]'>Wall Art Product</Link>
+          {/* <Link to={"/wallartproduct"} className='text-white underline text-[1.2rem]'>Wall Art Product</Link> */}
           <Link to={"/customise"} className='text-white underline text-[1.2rem]'>Customise</Link>
           <Link to="/contact-us" className="text-white underline text-[1.2rem]">Contact Us</Link>
           {isLoggedIn ? (
@@ -51,7 +51,7 @@ const Header = () => {
             </button>
           ) : (
             <Link
-              to="/login" className="text-white underline text-[1.2rem]"
+              to="/signin" className="text-white underline text-[1.2rem]"
             >
               LOGIN/SIGNUP
             </Link>
@@ -63,17 +63,29 @@ const Header = () => {
         {isOpen ? <FaTimes size={30} /> : <FaBars size={30} />}
       </div>
       {isOpen && (
-        <div className="hidden max-[1282px]:flex flex-col items-center gap-4 pb-5 absolute top-10 left-0 right-0 bg-black">
+        <div className="hidden max-[1282px]:flex flex-col items-center gap-4 pb-5 absolute top-10 left-0 right-0 bg-black z-50">
           <Link className="text-white underline text-[1.2rem]">Your Account</Link>
           <Link className="text-white underline text-[1.2rem]">Your Cart</Link>
           <Link to="/" className="text-white underline text-[1.2rem]">Home</Link>
           <Link to="/phonecase" className="text-white underline text-[1.2rem]">Phone Cases</Link>
-          <Link to="/product" className="text-white underline text-[1.2rem]">Product Page</Link>
           <Link to="/wallart" className="text-white underline text-[1.2rem]">Wall Art</Link>
-          <Link to="/wallartproduct" className="text-white underline text-[1.2rem]">Wall Art Product</Link>
           <Link to="/customise" className="text-white underline text-[1.2rem]">Customise</Link>
           <Link to="/contact-us" className="text-white underline text-[1.2rem]">Contact Us</Link>
+          {isLoggedIn ? (
+            <button
+              onClick={handleLogout}
+              className="text-white underline text-[1.2rem]"
+            >
+              Logout
+            </button>
+          ) : (
+            <Link
+              to="/signin" className="text-white underline text-[1.2rem]"
+            >
+              LOGIN/SIGNUP
+            </Link>
 
+          )}
 
         </div>
       )}

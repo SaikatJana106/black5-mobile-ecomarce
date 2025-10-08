@@ -23,10 +23,10 @@ const Home = () => {
         AOS.init({ duration: 2000 });
     }, []);
 
-    const reviews = Array(8).fill({
-        title: 'Best Artistic Designs',
-        text: 'The Bes gvedgf gogr gvdgf pgvn grdt Phone Cases for high fitting high grip!',
-    });
+    // const reviews = Array(8).fill({
+    //     title: 'Best Artistic Designs',
+    //     text: 'The Bes gvedgf gogr gvdgf pgvn grdt Phone Cases for high fitting high grip!',
+    // });
 
     const ideas = [
         { id: 1, name: 'Ruma Bose', text: 'Ruma Bo gfg vgfgfg vgse etffhefdgvdgyr relef vfgv', images: [1, 2, 3] },
@@ -78,7 +78,7 @@ const Home = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const res = await axios.get("https://admin.black5creatives.in/api/categories");
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/categories`);
                 // Extract categories from response
                 const cattype = res.data.data.categories.data;
                 setCategories(cattype);
@@ -99,8 +99,7 @@ const Home = () => {
     // =================category api call ===========================
 
 
-    // ==================product api call====================
-    // const [products, setProducts] = useState([]);
+    // ==================best selling mobile product api call====================
     const [bestSellingMobileProducts, setBestSellingMobileProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     useEffect(() => {
@@ -110,13 +109,10 @@ const Home = () => {
             try {
                 setLoading(true);
                 const res = await axios.get(
-                    `https://black5creations.orbitalwebworks.com/api/products`
+                    `${import.meta.env.VITE_API_URL}/products/best-selling?type=phonecase`
                 );
+                setBestSellingMobileProducts(res.data.data.products);
 
-                const bestsellmobileproductData = res.data.data.products.data.filter(
-                    (bestsellmobileproductfilter) => bestsellmobileproductfilter.stock > 0 && bestsellmobileproductfilter.is_visible === 1 && bestsellmobileproductfilter.is_best_selling === 1
-                );
-                setBestSellingMobileProducts(bestsellmobileproductData); // products array
             } catch (err) {
                 console.error("Error fetching products:", err);
             } finally {
@@ -125,16 +121,63 @@ const Home = () => {
         };
         fetchProducts();
     }, []);
-    // ==================product api call====================
+    // ==================best selling mobile product api call====================
+
+    // ==================best selling mobile product api call====================
+    const [bestSellingWallArtProducts, setBestSellingWallArtProducts] = useState([]);
+    const [WallArtloading, setWallArtLoading] = useState(true);
+    useEffect(() => {
+
+
+        const fetchProducts = async (page = 1) => {
+            try {
+                setWallArtLoading(true);
+                const res = await axios.get(
+                    `${import.meta.env.VITE_API_URL}/products/best-selling?type=wallart`
+                );
+                setBestSellingWallArtProducts(res.data.data.products);
+
+            } catch (err) {
+                console.error("Error fetching products:", err);
+            } finally {
+                setWallArtLoading(false);
+            }
+        };
+        fetchProducts();
+    }, []);
+    // ==================best selling mobile product api call====================
+
+
+    //============================= review api call==================================
+    const [reviews, setReviews] = useState([]);
+    const [reviewsVideo, setReviewsVideo] = useState([]);
+    useEffect(() => {
+        const fetchReviews = async () => {
+            try {
+                const res = await axios.get("https://admin.black5creatives.in/api/reviews");
+                const reviewData = res.data.data;
+                setReviews(reviewData);
+                console.log(reviewData[0].videos);
+
+                setReviewsVideo(reviewData.videos);
+
+                // console.log("Fetched reviews:", reviewUsers );
+            } catch (err) {
+                console.error("Error fetching reviews:", err);
+            }
+        };
+        fetchReviews();
+    }, []);
+    //============================= review api call==================================
 
     // video play logic
     const [selectedVideo, setSelectedVideo] = useState("phone");
 
     return (
         <div>
-            <section className="w-[95%] lg:w-[75%] xl:w-[65%] max-w-[1400px] mx-auto py-5 mt-5 flex max-[780px]:flex-col flex-row justify-between gap-6 text-white font-sans max-[780px]:max-w-md h-[90vh] max-h-[600px] min-h-fit">
+            <section className="w-[95%] lg:w-[75%] xl:w-[70%] max-w-[1400px] mx-auto py-5 mt-5 flex max-[780px]:flex-col flex-row justify-between gap-6 text-white font-sans max-[780px]:max-w-md h-[90vh] max-h-[600px] min-h-fit">
                 {/* Left Column w-[95%] xl:w-[80%]*/}
-                <div className="max-[780px]:w-full w-[48%] flex flex-col gap-4 md:gap-6">
+                <div className="max-[780px]:w-full w-[48%] flex flex-col gap-4 md:gap-6 min-h-fit">
                     {/* Welcome Section */}
                     <div className="flex z-10 bg-[#ebebeb] rounded-3xl shadow-xl justify-between relative overflow-visible  " >
                         <div className="text-black p-6 flex flex-col justify-center">
@@ -146,7 +189,7 @@ const Home = () => {
                                 <li className="px-2 py-1 bg-black rounded-full text-xs text-white text-center">Wall arts</li>
                             </ul>
                         </div>
-                        <img src="/w1.png" alt="phone" className="absolute bottom-0 right-0  h-[clamp(13rem,17vw,50rem)] z-[999] drop-shadow-xl" />
+                        <img src="/w1.png" alt="phone" className="absolute bottom-0 right-0  h-[clamp(14rem,20vw,22rem)] z-[999] drop-shadow-xl" />
                     </div>
 
                     {/* Two Product Cards */}
@@ -154,7 +197,7 @@ const Home = () => {
                         <div className="bg-white w-1/2 rounded-4xl p-2 flex flex-col items-center overflow-hidden ">
                             <p className="text-black text-sm mb-2 underline font-semibold">Phone Case</p>
                             <div className='bg-[#eeeeee] rounded-4xl p-4 flex flex-col justify-center items-center w-full'>
-                                <div className=" rounded-xl bg-[url('/home/design.png')] bg-cover bg-center max-h-64 h-[34vh] w-40 min-h-fit flex justify-center items-center">
+                                <div className=" rounded-xl bg-[url('/home/design.png')] bg-cover bg-center max-h-80 h-[34vh] w-40 min-h-fit flex justify-center items-center">
                                     <img className="max-h-64 h-[34vh] rounded-xl" src="/4productpage/2img.png" alt="Phone Case" />
                                 </div>
 
@@ -165,18 +208,18 @@ const Home = () => {
                         <div className="bg-white w-1/2 rounded-4xl p-2 flex flex-col items-center overflow-hidden">
                             <p className="text-black text-sm mb-2 underline font-semibold">Wall art</p>
                             <div className='bg-[#eeeeee] rounded-4xl p-4 flex flex-col justify-center items-center w-full'>
-                                <div className=" rounded-xl bg-[url('/home/design.png')] bg-cover bg-center max-h-64 h-[34vh] w-32 flex justify-center items-center">
+                                <div className=" rounded-xl bg-[url('/home/design.png')] bg-cover bg-center max-h-80 h-[34vh] w-32 flex justify-center items-center">
                                     <img className="max-h-32 h-[34vh] rounded-xl" src="/5wallartproduct/persion.png" alt="Wall Art" />
                                     {/* <video className="h-64 rounded-xl" autoPlay src="/home/wallart.mp4"></video> */}
                                 </div>
-                                <Link to="/phonecase" className="mt-2 px-3 py-1 text-xs bg-black text-white rounded-full">Shop Now</Link>
+                                <Link to="/wallart" className="mt-2 px-3 py-1 text-xs bg-black text-white rounded-full">Shop Now</Link>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Right Column */}
-                <div className="max-[780px]:w-full w-[48%] bg-[url('/home/homebg.png')] bg-cover bg-center rounded-4xl relative overflow-hidden flex flex-col justify-center lg:mt-0 h-[82vh] max-h-[600px] min-h-fit">
+                <div className="max-[780px]:w-full w-[48%] bg-[url('/home/homebg.png')] bg-cover bg-center rounded-4xl relative overflow-hidden flex flex-col justify-center lg:mt-0 h-[83vh] min-h-fit max-h-[1000px]">
                     <div className='flex items-center justify-center h-[100%] '>
                         {/* <img src="/home/phone.png" alt="Main Phone Case" className="h-[80%] mx-auto drop-shadow-2xl object-cover object-center min-h-72 max-h-96" /> */}
                         <video
@@ -286,22 +329,27 @@ const Home = () => {
 
             <section>
                 <div className='flex flex-col justify-center items-center'>
-                    <img src="/home/card-text-first.png" className='w-[clamp(3rem,70vw,100rem)]  z-[-1] mb-[-15%]' data-aos="fade-up" data-aos-delay="1800" alt="" />
+                    <img src="/home/card-text-first.png" className='w-[clamp(3rem,70vw,100rem)]  z-[-1] mb-[-12%]' data-aos="fade-up" data-aos-delay="1800" alt="" />
                     <div className='flex justify-center items-center'>
                         <img src="/home/small-card.png" className='w-[clamp(1rem,8vw,10rem)] z-10' alt="" />
-                        <div className="relative w-full sm:rounded-2xl md:rounded-[30px] overflow-hidden shadow-lg mx-2 flex justify-center items-center ml-[-4%] z-0 rounded-2xl" data-aos="fade-up" data-aos-delay="500">
+                        <div className=" w-full sm:rounded-2xl md:rounded-[30px] overflow-hidden shadow-lg mx-2 flex justify-center items-center ml-[-4%] z-0 rounded-2xl" data-aos="fade-up" data-aos-delay="500">
                             <img
                                 src="/home/card.png"
                                 alt="Platinum Card"
-                                className="w-[clamp(10vw,80vw,80vw)] h-auto object-contain rounded-2xl"
+                                className="w-[clamp(10vw,80vw,80vw)] h-auto object-contain rounded-2xl relative"
                                 loading="lazy"
                             />
 
                             {/* Button Image should be inside this relative container */}
                             <img
                                 src="/home/card-button.png"
-                                className="absolute bottom-[27%] left-[37%]  w-[clamp(1rem,20vw,50rem)]"
+                                className="absolute bottom-[20%] left-[37%]  w-[clamp(1rem,20vw,50rem)]"
                                 alt=""
+                            />
+                            <img
+                                src="/home/whatpcard.png"
+                                alt="What P Card"
+                                className="w-[clamp(10rem,25vw,30vw)] absolute bottom-0" // use margin-top instead of absolute positioning
                             />
                         </div>
 
@@ -312,8 +360,9 @@ const Home = () => {
             </section>
 
 
+
             <div className="bg-white text-black py-10 px-2 sm:px-10 font-sans w-[85%] max-lg:w-[95%] rounded-4xl mx-auto my-5 flex justify-between max-lg:flex-col-reverse flex-row max-lg:max-w-2xl max-w-[1400px] " style={{ rowGap: '1rem' }}>
-                <div className=" w-full lg:w-[40%]">
+                <div className=" w-full lg:w-auto">
                     <h2 className="text-xl font-semibold mb-2 text-center">Our Customer Reviews</h2>
                     <div className='flex flex-col justify-center items-center '>
                         <IoIosArrowDown className='text-black shadow-2xl w-fit h-fit bg-gray-100 rounded-full text-xl max-lg:hidden' />
@@ -323,10 +372,10 @@ const Home = () => {
                                 <div key={index} className="flex  items-center gap-4 bg-white rounded-full shadow pr-2 h-14 min-h-fit border max-lg:min-w-[400px]">
                                     <div className="w-16 h-16 bg-black rounded-full"></div>
                                     <div className="flex-1">
-                                        <h3 className="text-sm font-semibold line-clamp-1">{review.title}</h3>
-                                        <p className="text-xs text-gray-500 max-lg:line-clamp-2 line-clamp-1">{review.text}</p>
+                                        <h3 className="text-sm font-semibold line-clamp-1">{review.user.name}</h3>
+                                        <p className="text-xs text-gray-500 max-lg:line-clamp-2 line-clamp-1">{review.review_text}</p>
                                     </div>
-                                    <button className="bg-black text-white text-xs rounded-full px-4 py-[6px] max-lg:min-w-fit">Shop Now</button>
+                                    <Link to={`/phone-case-product/${review.product.id}`} className="bg-black text-white text-xs rounded-full px-4 py-[6px] max-lg:min-w-fit">Shop Now</Link>
                                 </div>
                             ))}
                         </div>
@@ -338,20 +387,22 @@ const Home = () => {
 
 
                 {/* Right: Video Review Placeholders */}
-                <div className="w-full lg:w-1/2 flex flex-col justify-between items-center gap-4">
+                <div className="w-full lg:w-2/3 flex flex-col justify-between items-center gap-4">
                     <h2 className="text-[clamp(1rem,1.5vw,1.75rem)] font-semibold mb-2 text-center">See What Our Customers are talking</h2>
                     <div className='flex justify-center items-center '>
                         <IoIosArrowForward className='text-black shadow-2xl w-fit h-fit bg-gray-100 rounded-full text-xl' />
                         <div className="flex gap-5 w-full justify-start overflow-auto scrollbar-hide">
-                            {[1, 2, 3, 4, 5].map((item, index) => (
+                            {reviews.map((review, rIndex) =>
+                                review.videos?.map((reviewVideo, vIndex) => (
+                                    <video
+                                        key={`${rIndex}-${vIndex}`}
+                                        className="rounded-4xl h-[450px] w-72 object-cover"
+                                        src={reviewVideo}
+                                        controls
+                                    />
+                                ))
+                            )}
 
-                                <img
-                                    src={modelImage}
-                                    alt={`Model ${index + 1} with phone case`}
-                                    className="rounded-4xl h-96 object-cover"
-                                />
-
-                            ))}
                         </div>
 
                         <IoIosArrowBack />
@@ -362,7 +413,7 @@ const Home = () => {
 
 
             <div className='flex flex-col max-xl:flex-col-reverse'>
-                <section className="flex flex-row gap-6  w-[85%] max-xl:w-[98%] mx-auto text-white max-lg:max-w-xl">
+                <section className="flex flex-row gap-6  w-[85%] max-xl:w-[98%] mx-auto text-white max-lg:max-w-xl max-w-7xl">
                     {/* Sidebar */}
                     <div className="w-full lg:w-1/5 flex flex-col gap-4 self-center max-lg:hidden">
                         <ul className="space-y-3 text-sm flex flex-col items-start justify-start max-lg:items-center">
@@ -395,9 +446,9 @@ const Home = () => {
                         <div className='bg-white rounded-4xl min-h-fit min-w-fit'>
                             <div className="flex flex-col-reverse md:flex-row items-center bg-white px-5 rounded-4xl py-2 max-md:w-fit w-full" style={{ justifySelf: 'center' }}>
                                 <div className="flex-1">
-                                    <h1 className="font-bold text-[clamp(1.5rem,1.8vw,2.5rem)]">
+                                    <h1 className="font-medium text-[clamp(1.5rem,2.2vw,2.5rem)]">
                                         We Can <br />
-                                        <span className="text-[clamp(1.5rem,2vw,3rem)]">Customize For You</span>
+                                        <span className="text-[clamp(2rem,2.7vw,2.7rem)]">Customize For You</span>
                                     </h1>
 
                                     <p className="text-sm mt-1">lets customize your special moments for us</p>
@@ -406,17 +457,17 @@ const Home = () => {
                                         <div className='bg-black text-white rounded-full p-2 flex items-center'>
                                             <HiOutlineLightBulb size={28} />
                                         </div>
-                                        <button className="bg-black text-white rounded-full px-4 py-2 flex items-center">
+                                        <button className="bg-black text-white rounded-full px-4 py-2 flex items-cente ">
                                             Phone Case
                                         </button>
-                                        <button className="bg-black text-white rounded-full px-4 py-2 flex items-center">Wall Art</button>
+                                        <button className="bg-black text-white rounded-full px-4 py-2 flex items-center ">Wall Art</button>
                                     </div>
                                 </div>
 
                                 <img
                                     src={statueImage}
                                     alt="Statue"
-                                    className="rounded-xl w-[clamp(12rem,20vw,16rem)] h-[clamp(12rem,20vw,16rem)] -mt-[clamp(1rem,5vw,2.5rem)]"
+                                    className="rounded-xl w-[clamp(15rem,19vw,20rem)] h-[clamp(15rem,19vw,20rem)] -mt-[clamp(1rem,5vw,2.5rem)]"
                                 />
 
                             </div>
@@ -546,7 +597,7 @@ const Home = () => {
                                                     Price: {product.total_price}
                                                 </div>
                                                 <div>
-                                                    <button className="underline text-sm mt-2">More Details</button>
+                                                    <Link to={`/phone-case-product/${product.id}`} className="underline text-sm mt-2">More Details</Link>
                                                 </div>
                                             </div>
                                         ))}
@@ -556,7 +607,7 @@ const Home = () => {
                                     </button>
                                 </div>
                                 <div className="text-center mt-6">
-                                    <button className="underline font-medium">View All Phone Cases</button>
+                                    <Link to={"/phonecase"} className="underline font-medium">View All Phone Cases</Link>
                                 </div>
                             </div>
 
@@ -584,16 +635,16 @@ const Home = () => {
 
                                 <h3 className="text-center text-sm mb-1 font-light">A Premium Experience In Every Detail</h3>
                                 <h2 className="text-center text-[clamp(1rem,1.5vw,50rem)] font-bold my-4">
-                                    <span className="bg-black text-white px-4 py-1 rounded-full">Our Best Selling Phone Cases</span>
+                                    <span className="bg-black text-white px-4 py-1 rounded-full">Our Best Selling Wall Arts</span>
                                 </h2>
                                 <div className='flex items-center justify-between gap-2 max-w-[400px] mx-auto'>
                                     <button className=" bg-black text-white p-2 rounded-full z-20 h-fit">
                                         <FaChevronLeft />
                                     </button>
                                     <div className="flex justify-start overflow-auto  scrollbar-hide gap-5">
-                                        {products.map((product, index) => (
+                                        {bestSellingWallArtProducts.map((product, index) => (
                                             <div key={index} className="text-center flex-shrink-0">
-                                                <img src={product.image} alt={product.name} className="max-w-40 w-full h-64 object-contain mx-auto" />
+                                                <img src={product.image_link} alt={product.name} className="w-40  h-40 object-contain mx-auto" />
                                                 <h3 className="mt-3 font-semibold">{product.name}</h3>
                                                 <div className="flex justify-center text-yellow-500 my-1">
                                                     {[...Array(5)].map((_, i) => (
@@ -601,7 +652,7 @@ const Home = () => {
                                                     ))}
                                                 </div>
                                                 <div className="bg-black text-white px-3 py-1 rounded-full inline-block mt-1">
-                                                    Price: {product.price}
+                                                    Price: {product.total_price}
                                                 </div>
                                                 <div>
                                                     <button className="underline text-sm mt-2">More Details</button>
@@ -614,7 +665,7 @@ const Home = () => {
                                     </button>
                                 </div>
                                 <div className="text-center mt-6">
-                                    <button className="underline font-medium">View All Phone Cases</button>
+                                    <Link to={"/wallart"} className="underline font-medium">View All Phone Cases</Link>
                                 </div>
                             </div>
                         </div>

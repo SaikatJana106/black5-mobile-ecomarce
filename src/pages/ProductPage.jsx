@@ -75,9 +75,19 @@ const ProductPage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        const token = localStorage.getItem("black5authtoken");
+        if (!token) {
+          window.location.href = "/signin"; // or use navigate("/login") if inside a React component
+          return;
+        }
+
         const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/products/${productId}`
+          `${import.meta.env.VITE_API_URL}/products/${productId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
         );
+
 
         setProducts(res.data.data.product);
         setVariation(res.data.data.product.variations[0].options)
@@ -104,7 +114,7 @@ const ProductPage = () => {
     try {
       const token = localStorage.getItem("black5authtoken");
       if (!token) {
-        window.location.href = "/login"; // or use navigate("/login") if inside a React component
+        window.location.href = "/signin"; // or use navigate("/login") if inside a React component
         return;
       }
       const response = await axios.post(
@@ -137,8 +147,59 @@ const ProductPage = () => {
     }
   };
   //============================ add to cart api call =======================================
+  //============================ recently view product api call ============================
+  const [recentviewproduct, setRecentviewproduct] = useState([]);
 
+  useEffect(() => {
+    const fetchrecentviewproduct = async () => {
+      try {
+        const token = localStorage.getItem("black5authtoken");
 
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/recently-viewed-products`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        setRecentviewproduct(response.data.data.product);
+        console.log(response.data);
+
+      } catch (error) {
+        console.error("Error fetching cart items:", error);
+      }
+    };
+
+    fetchrecentviewproduct();
+  }, []);
+  //============================ recently view product api call ============================
+
+  // ============================also like prouct ============================
+  const [simillerproduct, setSimillerproduct] = useState([]);
+
+  useEffect(() => {
+    const fetchsimillerproduct = async () => {
+      try {
+        const token = localStorage.getItem("black5authtoken");
+
+        const response = await axios.get(
+           `${import.meta.env.VITE_API_URL}/products/${productId}/related`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        setSimillerproduct(response.data);
+        console.log("similer p",response.data);
+
+      } catch (error) {
+        console.error("Error fetching cart items:", error);
+      }
+    };
+
+    fetchsimillerproduct();
+  }, []);
+  // ============================also like prouct ============================
   //================================== api call ====================================
 
   return (
@@ -152,7 +213,7 @@ const ProductPage = () => {
         <p className='text-white text-[clamp(1.3rem,2.2vw,4rem)]'>We Make The Best Cases For You!</p>
       </section>
 
-      <section className="bg-[#f9f9f9] p-6 max-md:p-2 rounded-xl w-[80%] max-w-[1400px] max-[1270px]:w-[99%] mx-auto font-sans text-gray-800">
+      <section className="bg-[#f9f9f9] p-6 max-md:p-2 rounded-xl w-[95%] max-w-[1500px] max-[1270px]:w-[99%] mx-auto font-sans text-gray-800">
         <div className="flex max-[1270px]:flex-col flex-row gap-2 justify-center ">
           {/* Phone Case Image */}
           <div className="flex flex-col md:flex-row w-full xl:w-2/3 justify-center">
@@ -161,7 +222,7 @@ const ProductPage = () => {
                 <img loading='lazy'
                   src={products.image_link}// replace with actual path
                   alt="Mayur Mayuri Case"
-                  className="w-[360px] h-auto rounded-xl"
+                  className="w-[800px] h-auto rounded-xl"
                 />
               </div>
             </div>
@@ -174,7 +235,7 @@ const ProductPage = () => {
                   <div className='h-3 w-3 rounded-full bg-black'></div>
                 </div>
                 <div>
-                  <h1 className='text-center bg-black rounded-2xl text-white'>View In 3d</h1>
+                  <h1 className='text-center bg-black rounded-2xl text-white text-xs'>View In 3d</h1>
                   <p className='text-xs text-center'>View the prouct in 3d</p>
                   <p className='text-xs text-center'>To get the best expereince</p>
                 </div>
@@ -209,32 +270,8 @@ const ProductPage = () => {
             </div>
 
             {/* Benefits */}
-            <div className="flex flex-col gap-2 max-h-[60px] overflow-auto">
-              {(() => {
-                const raw = products?.sort_description || "";
-                let items = [];
-
-                // Case 1: if <li> exists, extract them
-                if (raw.includes("<li>")) {
-                  items = raw
-                    .split("</li>")
-                    .map(item => item.replace(/<li>|<\/?ul>/g, "").trim())
-                    .filter(Boolean);
-                } else {
-                  // Case 2: fallback - split by <p> or just treat as plain text
-                  items = raw
-                    .split(/<\/p>|<br\s*\/?>/gi)
-                    .map(item => item.replace(/<p>/g, "").trim())
-                    .filter(Boolean);
-                }
-
-                return items.map((desc, idx) => (
-                  <div key={idx} className="flex items-start gap-2 ">
-                    <strong className="bg-black h-2 w-2 rounded-full mt-2"></strong>
-                    <p className="text-gray-700 text-md">{desc}</p>
-                  </div>
-                ));
-              })()}
+            <div className="flex flex-col gap-2 max-h-[60px] overflow-auto font-semibold">
+              {products.sort_description ? parse(products.sort_description) : <p>No description available.</p>}
             </div>
 
 
@@ -444,29 +481,33 @@ const ProductPage = () => {
         <div className="flex items-center justify-center gap-2 mb-6 w-[75%] max-xl:w-[95%] max-w-[1400px] mx-auto">
           <button onClick={() => PhoneProductsecondscroll("left")} className="text-2xl text-white hover:text-gray-300">&#10094;</button>
           <div ref={PhoneProductsecondscrollRef} className="flex overflow-hidden gap-6 scrollbar-hide">
-            {caseData.map((item) => (
-              <div
-                key={item.id}
-                className="min-w-[150px] max-w-[150px] flex-shrink-0 text-center"
-              >
-                <img loading='lazy'
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full h-auto rounded-lg shadow-md"
-                />
-                <h3 className="mt-2 text-sm font-semibold">{item.name}</h3>
-                <div className="flex justify-center text-yellow-400 text-sm">
-                  {Array(5)
-                    .fill()
-                    .map((_, i) => (
-                      <FaStar key={i} />
-                    ))}
+            {Array.isArray(recentviewproduct) && recentviewproduct.length > 0 ? (
+              recentviewproduct.map((item) => (
+                <div
+                  key={item.id}
+                  className="min-w-[150px] max-w-[150px] flex-shrink-0 text-center"
+                >
+                  <img loading='lazy'
+                    src={item.image_link}
+                    alt={item.name}
+                    className="w-full h-auto rounded-lg shadow-md"
+                  />
+                  <h3 className="mt-2 text-sm font-semibold">{item.name}</h3>
+                  <div className="flex justify-center text-yellow-400 text-sm">
+                    {Array(5)
+                      .fill()
+                      .map((_, i) => (
+                        <FaStar key={i} />
+                      ))}
+                  </div>
+                  <p className="text-white mt-1 text-sm">
+                    Price: <span className="font-bold">₹{item.total_price}/-</span>
+                  </p>
                 </div>
-                <p className="text-white mt-1 text-sm">
-                  Price: <span className="font-bold">₹{item.price}/-</span>
-                </p>
-              </div>
-            ))}
+              ))
+            ) : (
+              <div className="text-gray-400">No recently viewed products found.</div>
+            )}
           </div>
           <button onClick={() => PhoneProductsecondscroll("right")} className="text-2xl text-white hover:text-gray-300">&#10095;</button>
         </div>

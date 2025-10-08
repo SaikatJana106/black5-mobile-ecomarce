@@ -68,7 +68,7 @@ const CartItemDisplay = () => {
             ) : (
                 <>
                     {/* Header Row (Hidden on small screens) */}
-                    <div className="hidden md:grid grid-cols-6 items-center mb-4 text-lg font-semibold text-gray-700">
+                    <div className="grid grid-cols-6 items-center mb-4 text-lg font-semibold text-gray-700">
                         <p className="text-white text-center">Product</p>
                         <p className="text-white text-center">Title</p>
                         <p className="text-white text-center">Price</p>
@@ -77,14 +77,14 @@ const CartItemDisplay = () => {
                         <p className="text-white text-center">Remove</p>
                     </div>
 
-                    <hr className="border-gray-600 mb-4 hidden md:block" />
+                    <hr className="border-gray-600 mb-4" />
 
                     {/* Cart Items */}
                     <div className="space-y-6">
                         {cartItems.map((item) => (
                             <div
                                 key={item.cart_id}
-                                className="grid grid-cols-1 md:grid-cols-6 items-center gap-4 border-b border-gray-600 pb-4"
+                                className="grid grid-cols-6 items-center gap-4 border-b border-gray-600 pb-4"
                                 style={{ justifyItems: "center" }}
                             >
                                 {/* Product Image */}

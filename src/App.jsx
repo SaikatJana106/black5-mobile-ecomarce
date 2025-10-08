@@ -15,6 +15,10 @@ import GoogleAuthHandler from './auth/GoogleAuthHandler';
 import Dashboard from './pages/Dashboard';
 import CartItemDisplay from './pages/CartItemDisplay';
 import Checkout from './pages/Checkout';
+import TermsAndCondition from './pages/TermsAndCondition';
+import PrivecyPolicy from './pages/PrivecyPolicy';
+import RefundandCancellationPolicy from './pages/RefundandCancellationPolicy';
+import ShippingandDeliveryPolicy from './pages/ShippingandDeliveryPolicy';
 // import other pages if needed
 // import Home from './pages/Home';
 // import About from './pages/About';
@@ -40,12 +44,16 @@ function App() {
           <Route path="/wallartproduct" element={<WallArtproductpage/>} />
           <Route path="/customise" element={<Customise/>} />
           <Route path="/congratulation" element={<CardCongrats/>} />  
-          <Route path="/login" element={<Login/>} />     
+          <Route path="/signin" element={<Login/>} />     
           <Route path="/contact-us" element={<ContactUs/>} />     
           <Route path="/google-auth-handler" element={<GoogleAuthHandler/>} />  
           <Route path="/dashboard" element={<Dashboard/>} />  
           <Route path="/cart" element={<CartItemDisplay/>} />  
-          <Route path="/checkout" element={<Checkout/>} />     
+          <Route path="/checkout" element={<Checkout/>} />    
+          <Route path="/terms-and-conditions" element={<TermsAndCondition/>} /> 
+          <Route path="/privacy-policy" element={<PrivecyPolicy/>} />   
+          <Route path="/refund-and-cancellation-policy" element={<RefundandCancellationPolicy/>} />     
+          <Route path="/shipping-and-delivery-policy" element={<ShippingandDeliveryPolicy/>} />     
           {/* Add other routes as needed */}
           {/* <Route path="/about" element={<About />} /> */}
         </Routes>

@@ -1,4 +1,5 @@
 import { IoIosArrowForward } from "react-icons/io";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
     return (
@@ -19,46 +20,41 @@ const Footer = () => {
                         </button>
                     </div>
                 </div>
-                <div className="flex items-center justify-between w-[70%] max-[750px]:flex-col gap-y-8 ">
+                <div className="flex items-start justify-between w-[70%] max-[750px]:flex-col max-[750px]:items-center gap-y-8 ">
                     {/* Shop */}
                     <div className="flex flex-col max-[750px]:items-center">
-                        <h3 className="font-semibold mb-4">Shop</h3>
+                        <h3 className="font-semibold mb-4">Quick Links</h3>
                         <ul className="space-y-2 text-sm flex flex-col max-[750px]:items-center">
-                            <li>True Wireless Earbuds</li>
-                            <li>Wired Headphones</li>
-                            <li>Home Audio</li>
-                            <li>Smart Watches</li>
-                            <li>Misfit Trimmers</li>
-                            <li>Wireless Headphones</li>
+                            <Link className="text-lg hover:underline w-fit" to={"/contact-us"}>Contact Us</Link>
+                            <Link className="text-lg hover:underline w-fit" to={"/terms-and-conditions"}>Terms and Conditions</Link>
+                            <Link className="text-lg hover:underline w-fit" to={"/privacy-policy"}>Privacy Policy</Link>
+                            <Link className="text-lg hover:underline w-fit" to={"/refund-and-cancellation-policy"}>Refund and Cancellation Policy</Link>
+                            <Link className="text-lg hover:underline w-fit" to={"/shipping-and-delivery-policy"}>Shipping and Delivery Policy</Link>
                         </ul>
                     </div>
 
                     {/* Help */}
                     <div className="flex flex-col max-[750px]:items-center">
-                        <h3 className="font-semibold mb-4">Help</h3>
+                        <h3 className="font-semibold mb-4">Our Services</h3>
                         <ul className="space-y-2 text-sm flex flex-col max-[750px]:items-center">
-                            <li>Track Your Order</li>
-                            <li>Warranty & Support</li>
-                            <li>Return Policy</li>
-                            <li>Service Centers</li>
-                            <li>Bulk Orders</li>
-                            <li>Why Buy Direct</li>
+                            <Link className="text-lg hover:underline w-fit" to={"/phonecase"}>Phone Case</Link>
+                            <Link className="text-lg hover:underline w-fit" to={"/wallart"}>Wall Art</Link>
+                           
                         </ul>
                     </div>
 
                     {/* Company */}
                     <div className="flex flex-col max-[750px]:items-center">
-                        <h3 className="font-semibold mb-4">Company</h3>
+                        <h3 className="font-semibold mb-4">Contact Us</h3>
                         <ul className="space-y-2 text-sm flex flex-col max-[750px]:items-center">
-                            <li>About boAt</li>
-                            <li>News</li>
-                            <li>Read Our Blog</li>
-                            <li>Careers</li>
-                            <li>Investor Relations</li>
-                            <li>Social Responsibility</li>
+                            <li className="text-lg hover:underline w-fit">About boAt</li>
+                            <li className="text-lg hover:underline w-fit">News</li>
+                            <li className="text-lg hover:underline w-fit">Read Our Blog</li>
+                            <li className="text-lg hover:underline w-fit">Careers</li>
+                            <li className="text-lg hover:underline w-fit">Investor Relations</li>
+                            <li className="text-lg hover:underline w-fit">Social Responsibility</li>
                         </ul>
                     </div>
-
                 </div>
             </div>
         </footer>

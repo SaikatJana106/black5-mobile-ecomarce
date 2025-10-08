@@ -8,6 +8,7 @@ import { CiSearch } from "react-icons/ci";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import phonecasefilterdata from '../json/phonecasefilterdata.json';
 import axios from 'axios';
+import parse, { domToReact } from "html-react-parser"
 import { Link, useParams } from "react-router-dom";
 const Phonecase = () => {
   // filter button for product
@@ -88,7 +89,7 @@ const Phonecase = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("https://admin.black5creatives.in/api/categories");
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/categories`);
         // Extract categories from response
         const cattype = res.data.data.categories.data;
         setCategories(cattype);
@@ -116,7 +117,7 @@ const Phonecase = () => {
   const fetchProducts = async (page = 1) => {
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/products?page=${page}`
+        `${import.meta.env.VITE_API_URL}/products?page=${page}&&type=phonecase`
       );
 
       const productData = res.data.data.products.data.filter(
@@ -170,6 +171,32 @@ const Phonecase = () => {
   }, []);
   //====================== brands api call ====================
 
+  // ====================== fretured api call======================  
+  const [featurepanels, setFeaturepanels] = useState([]);
+
+  useEffect(() => {
+    const fetchFeaturepanels = async () => {
+      try {
+        const token = localStorage.getItem("black5authtoken");
+
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/feature-panels/phone-case`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        setFeaturepanels(response.data.data);
+        console.log(response.data);
+
+      } catch (error) {
+        console.error("Error fetching cart items:", error);
+      }
+    };
+
+    fetchFeaturepanels();
+  }, []);
+  // ====================== fretured api call======================  
   return (
     <div className=" text-white font-sans">
       {/* ✅ Hero Section with Background */}
@@ -280,32 +307,29 @@ const Phonecase = () => {
         </div>
         <div className="flex items-center justify-center gap-2 mb-6 w-[75%] max-xl:w-[95%] max-w-[1400px] mx-auto">
           <button onClick={() => scroll("left")} className="text-2xl text-white hover:text-gray-300">&#10094;</button>
-          <div ref={PhoneProductscrollRef} className="flex overflow-hidden gap-6 scrollbar-hide px-4">
-            {BestSellers.map((item) => (
-              <div
-                key={item.id}
-                className="min-w-[300px] max-w-[300px] flex-shrink-0 text-center relative"
-              >
-                <img loading='lazy'
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full h-auto rounded-lg shadow-md object-cover"
-                />
-                <div className='absolute top-2 left-[5%] '>
-                  <h3 className="mt-2 text-sm font-semibold">{item.name}</h3>
-                  <div className="flex mt-1 text-yellow-400 text-sm">
-                    {Array(5)
-                      .fill()
-                      .map((_, i) => (
-                        <FaStar key={i} />
-                      ))}
+          <div ref={PhoneProductscrollRef} className="flex overflow-auto gap-6 scrollbar-hide px-4">
+            {Array.isArray(featurepanels) && featurepanels.length > 0 ? (
+              featurepanels.map((item) => (
+                <div
+                  key={item.id}
+                  className="min-w-[300px] max-w-[300px] flex-shrink-0 text-center relative"
+                >
+                  <img
+                    loading="lazy"
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-auto rounded-lg shadow-md object-cover"
+                  />
+                  <div className="absolute top-2 left-[5%]">
+                    <h3 className="mt-2 text-sm font-bold bg-black/60 rounded-2xl p-2">{item.title}</h3>
+                    {/* <h3 className="mt-2 text-lg font-medium">{parse(item.description)}</h3> */}
                   </div>
-                  <p className="text-white mt-1 text-sm text-left">
-                    Price: <span className="font-bold">₹{item.price}/-</span>
-                  </p>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-center text-gray-400">No featured panels found.</p>
+            )}
+
           </div>
           <button onClick={() => scroll("right")} className="text-2xl text-white hover:text-gray-300">&#10095;</button>
         </div>
@@ -375,7 +399,7 @@ const Phonecase = () => {
 
 
       {/* ================================last section ============================================= */}
-      <div ref={filtersectionRef} className=" bg-white text-black p-15 max-lg:p-6 rounded-3xl shadow-lg gap-6 min-h-screen w-[85%] max-lg:w-[95%] mx-auto mb-5 max-w-[1400px]">
+      <div ref={filtersectionRef} className=" bg-white text-black p-15 max-lg:p-6 rounded-3xl shadow-lg gap-6 h-screen w-[85%] max-lg:w-[95%] mx-auto mb-5 max-w-[1400px] max-h-96 min-h-fit">
         {/* Filter Sidebar */}
         {/* <div className="lg:w-1/4 space-y-6 border-r pr-4 max-lg:hidden">
           {phonecasefilterdata.filters.map((filterSection, index) => (
@@ -480,23 +504,23 @@ const Phonecase = () => {
           ))}
         </div> */}
 
-        <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 justify-between gap-5 h-fit w-full min-h-screen'>
+        <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 justify-between gap-5 h-fit w-full '>
           {products.map((item) => (
             <div key={item.id} className="flex flex-col items-center text-center space-y-1">
               <Link to={`/phone-case-product/${item.id}`}>
                 <img
                   src={item.image_link ? item.image_link : "/4productpage/1img.png"}
                   alt={item.name}
-                  className="h-fit w-fit object-cover rounded-md max-h-60"
+                  className="w-[clamp(150px,28vw,500px)] h-[clamp(200px,35vw,600px)] rounded-md "
                   loading='lazy'
                 />
               </Link>
-              <Link to={`/phone-case-product/${item.id}`} className="text-xs font-medium hover:underline">{item.name}</Link >
-              <Link to={`/phone-case-product/${item.id}`} className="text-xs font-medium hover:underline">{item.type}</Link >
+              <Link to={`/phone-case-product/${item.id}`} className="text-[clamp(1rem,1.7vw,5rem)] font-medium hover:underline">{item.name}</Link >
+              <Link to={`/phone-case-product/${item.id}`} className="text-[clamp(1rem,1.5vw,5rem)] font-medium hover:underline">{item.type}</Link >
               <div className="text-yellow-500 text-sm">
                 {"★".repeat(4)}{"☆".repeat(1)}
               </div>
-              <p className="text-sm font-semibold">Price: ₹{item.product_price}</p>
+              <p className="text-[clamp(0.8rem,0.8vw,5rem)] font-semibold">Price: ₹{item.product_price}</p>
             </div>
           ))}
         </div>
